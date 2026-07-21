@@ -26,60 +26,113 @@ const DATE_RANGE_OPTIONS: { value: DateRange; label: string }[] = [
   { value: "year", label: "Last Year" },
 ];
 
-const EXPORT_DATA: Record<string, () => void> = {
-  overview: () => {
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 }).format(value);
+}
+
+async function exportOverview(dateRange: string) {
+  try {
+    const res = await fetch(`/api/reports/overview?period=${dateRange}`);
+    const data = await res.json();
+    if (!data?.requests) {
+      return;
+    }
     const headers = ["Metric", "Value", "Description"];
     const rows = [
-      ["Total Requests", "42", "5 status types"],
-      ["Revenue Collected", "$128,750", "$38,750 pending"],
-      ["Hours Utilization", "72%", "144h used of 200h"],
-      ["Team Members", "12", "10 active"],
+      ["Total Requests", String(data.requests.total), `${Object.keys(data.requests.byStatus).length} status types`],
+      ["Revenue Collected", formatCurrency(data.revenue.total), `${formatCurrency(data.revenue.pending)} pending`],
+      ["Hours Utilization", `${data.hours.utilization}%`, `${data.hours.used}h used of ${data.hours.available}h`],
+      ["Team Members", String(data.users.total), `${data.users.active} active`],
     ];
     const csv = generateCSV(headers, rows);
     downloadCSV("overview-report.csv", csv);
-  },
-  requests: () => {
+  } catch (err) {
+    console.error("Failed to export overview:", err);
+  }
+}
+
+async function exportRequests(dateRange: string) {
+  try {
+    const res = await fetch(`/api/reports/requests?period=${dateRange}`);
+    const data = await res.json();
+    if (!data?.total) {
+      return;
+    }
     const headers = ["Status", "Count"];
-    const rows = [
-      ["Pending", "14"],
-      ["In Progress", "18"],
-      ["In Review", "6"],
-      ["Completed", "32"],
-      ["Cancelled", "3"],
-      ["On Hold", "2"],
-    ];
+    const rows = Object.entries(data.byStatus).map(([status, count]) => [
+      status.replace("_", " "),
+      String(count),
+    ]);
     const csv = generateCSV(headers, rows);
     downloadCSV("requests-report.csv", csv);
-  },
-  hours: () => {
+  } catch (err) {
+    console.error("Failed to export requests:", err);
+  }
+}
+
+async function exportHours(dateRange: string) {
+  try {
+    const res = await fetch(`/api/reports/hours?period=${dateRange}`);
+    const data = await res.json();
+    if (!data?.summary) {
+      return;
+    }
     const headers = ["Client", "Allocated", "Used", "Remaining", "Utilization"];
-    const rows = [
-      ["Meridian Labs", "80", "62", "18", "78%"],
-      ["Verdant Health", "60", "44", "16", "73%"],
-      ["Greenfield Corp", "40", "28", "12", "70%"],
-      ["Nexus Financial", "20", "10", "10", "50%"],
-    ];
+    const rows = data.byClient.map((c: { clientId: string; totalHours: number; usedHours: number; remainingHours: number; utilizationPct: number }) => [
+      c.clientId,
+      String(c.totalHours),
+      String(c.usedHours),
+      String(c.remainingHours),
+      `${c.utilizationPct}%`,
+    ]);
     const csv = generateCSV(headers, rows);
     downloadCSV("hours-report.csv", csv);
-  },
-  revenue: () => {
+  } catch (err) {
+    console.error("Failed to export hours:", err);
+  }
+}
+
+async function exportRevenue(dateRange: string) {
+  try {
+    const res = await fetch(`/api/reports/revenue?period=${dateRange}`);
+    const data = await res.json();
+    if (!data?.summary) {
+      return;
+    }
     const headers = ["Month", "Revenue", "Pending", "Invoices"];
-    const rows = [
-      ["Feb 2026", "$185,000", "$12,000", "8"],
-      ["Mar 2026", "$210,000", "$18,500", "10"],
-      ["Apr 2026", "$195,000", "$22,000", "9"],
-      ["May 2026", "$248,000", "$15,000", "12"],
-      ["Jun 2026", "$227,500", "$38,750", "11"],
-      ["Jul 2026", "$182,000", "$45,000", "7"],
-    ];
+    const rows = data.monthly.map((m: { month: string; revenue: number; pending: number; invoices: number }) => [
+      new Date(m.month + "-01").toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+      formatCurrency(m.revenue),
+      formatCurrency(m.pending),
+      String(m.invoices),
+    ]);
     const csv = generateCSV(headers, rows);
     downloadCSV("revenue-report.csv", csv);
-  },
+  } catch (err) {
+    console.error("Failed to export revenue:", err);
+  }
+}
+
+const EXPORTERS: Record<string, (dateRange: string) => Promise<void>> = {
+  overview: exportOverview,
+  requests: exportRequests,
+  hours: exportHours,
+  revenue: exportRevenue,
 };
 
 export default function ReportsPage() {
   const [dateRange, setDateRange] = useState<DateRange>("30d");
   const [activeTab, setActiveTab] = useState("overview");
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await EXPORTERS[activeTab]?.(dateRange);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -104,10 +157,11 @@ export default function ReportsPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => EXPORT_DATA[activeTab]?.()}
+            onClick={handleExport}
+            disabled={exporting}
           >
             <Download className="h-4 w-4 mr-2" />
-            Export CSV
+            {exporting ? "Exporting..." : "Export CSV"}
           </Button>
         </div>
       </div>
