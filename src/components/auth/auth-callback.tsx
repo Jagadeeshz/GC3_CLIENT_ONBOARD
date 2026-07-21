@@ -5,6 +5,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
 
+function getDashboardPath(role: string): string {
+  if (role === "client") return "/client/dashboard";
+  if (role === "operations_team") return "/operations/dashboard";
+  if (role === "pod_member" || role === "pod_manager") return "/pod/dashboard";
+  if (role === "cpiu") return "/cpiu/dashboard";
+  if (role === "leadership") return "/dashboard";
+  return "/dashboard";
+}
+
 export function AuthCallback() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -15,6 +24,7 @@ export function AuthCallback() {
       const token_hash = searchParams.get("token_hash");
       const type = searchParams.get("type");
       const code = searchParams.get("code");
+      const next = searchParams.get("next");
 
       if (token_hash && type) {
         const { error } = await supabase.auth.verifyOtp({
@@ -28,6 +38,11 @@ export function AuthCallback() {
             return;
           }
 
+          if (next) {
+            router.push(next);
+            return;
+          }
+
           const { data: { user } } = await supabase.auth.getUser();
           if (user) {
             const { data: profile } = await supabase
@@ -37,11 +52,7 @@ export function AuthCallback() {
               .single();
 
             const role = profile?.role || "";
-            if (role === "client") {
-              router.push("/client/dashboard");
-            } else {
-              router.push("/dashboard");
-            }
+            router.push(getDashboardPath(role));
           } else {
             router.push("/dashboard");
           }
@@ -52,6 +63,11 @@ export function AuthCallback() {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (!error) {
+          if (next) {
+            router.push(next);
+            return;
+          }
+
           const { data: { user } } = await supabase.auth.getUser();
           if (user) {
             const { data: profile } = await supabase
@@ -61,11 +77,7 @@ export function AuthCallback() {
               .single();
 
             const role = profile?.role || "";
-            if (role === "client") {
-              router.push("/client/dashboard");
-            } else {
-              router.push("/dashboard");
-            }
+            router.push(getDashboardPath(role));
           } else {
             router.push("/dashboard");
           }
