@@ -63,8 +63,10 @@ export function useAuth() {
           setUser(null);
           setRawUser(null);
         } else if (event === "TOKEN_REFRESHED" && session?.user) {
-          const profile = await fetchUserProfile(session.user.id);
-          setUser(profile);
+          if (!user) {
+            const profile = await fetchUserProfile(session.user.id);
+            setUser(profile);
+          }
         }
         setIsLoading(false);
       }

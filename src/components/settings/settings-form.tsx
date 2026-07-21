@@ -7,20 +7,28 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileSettings } from "@/components/settings/profile-settings";
 import { NotificationSettings } from "@/components/settings/notification-settings";
-import { Settings, User, Bell, Palette } from "lucide-react";
+import { WorkspaceMembersSettings } from "@/components/settings/workspace-members";
+import { Settings, User, Bell, Palette, Users } from "lucide-react";
 import { toast } from "sonner";
 
 export function SettingsForm() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, hasRole } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
+  const isClient = hasRole("client");
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-      <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+      <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
         <TabsTrigger value="profile" className="gap-2">
           <User className="h-4 w-4" />
           <span className="hidden sm:inline">Profile</span>
         </TabsTrigger>
+        {isClient && (
+          <TabsTrigger value="workspace-members" className="gap-2">
+            <Users className="h-4 w-4" />
+            <span className="hidden sm:inline">Team</span>
+          </TabsTrigger>
+        )}
         <TabsTrigger value="notifications" className="gap-2">
           <Bell className="h-4 w-4" />
           <span className="hidden sm:inline">Notifications</span>
@@ -42,6 +50,12 @@ export function SettingsForm() {
       <TabsContent value="profile">
         <ProfileSettings />
       </TabsContent>
+
+      {isClient && (
+        <TabsContent value="workspace-members">
+          <WorkspaceMembersSettings />
+        </TabsContent>
+      )}
 
       <TabsContent value="notifications">
         <NotificationSettings />

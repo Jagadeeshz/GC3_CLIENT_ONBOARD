@@ -14,7 +14,6 @@ import {
   Headphones,
   LayoutDashboard,
   Menu,
-  X,
 } from "lucide-react";
 
 const features = [
@@ -95,14 +94,8 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Right: Partner With Us */}
+              {/* Right: Mobile menu button only */}
               <div className="flex items-center gap-3">
-                <Link href="/login/client" className="hidden sm:block">
-                  <button className="liquid-glass rounded-full px-5 py-2 text-sm font-medium text-white transition-all duration-300 hover:scale-105 active:scale-[0.98]">
-                    Partner With Us
-                  </button>
-                </Link>
-                {/* Mobile menu button */}
                 <button className="lg:hidden rounded-full p-2 text-white/70 hover:text-white hover:bg-white/10 transition-colors">
                   <Menu className="h-5 w-5" />
                 </button>
@@ -150,10 +143,10 @@ export default function HomePage() {
               {/* CTA */}
               <div className="fade-rise-delay-2 mt-10">
                 <Link href="/login/client">
-                  <button className="liquid-glass group inline-flex items-center gap-3 rounded-full px-8 py-4 text-base font-medium text-white transition-all duration-300 hover:scale-105 active:scale-[0.98]">
-                    <Globe className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                  <button className="group relative inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-10 py-5 text-lg font-medium text-white shadow-[0_0_30px_rgba(99,102,241,0.3)] backdrop-blur-xl transition-all duration-500 hover:border-white/30 hover:bg-white/15 hover:shadow-[0_0_50px_rgba(99,102,241,0.5)] hover:scale-105 active:scale-[0.98]">
+                    <Globe className="h-5 w-5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
                     Partner With Us
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
                   </button>
                 </Link>
               </div>

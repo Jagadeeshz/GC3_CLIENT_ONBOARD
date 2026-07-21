@@ -26,10 +26,6 @@ const routeRoleMap: { prefix: string; allowedRoles: string[] }[] = [
 
 function getRoleDashboardPath(role: string): string {
   if (role === "client") return "/client/dashboard";
-  if (role === "operations_team") return "/operations/dashboard";
-  if (role === "pod_member" || role === "pod_manager") return "/pod/dashboard";
-  if (role === "cpiu") return "/cpiu/dashboard";
-  if (role === "leadership") return "/dashboard";
   return "/dashboard";
 }
 

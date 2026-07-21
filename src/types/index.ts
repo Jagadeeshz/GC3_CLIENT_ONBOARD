@@ -326,3 +326,31 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+export type WorkspaceMemberRole =
+  | "owner"
+  | "project_manager"
+  | "marketing"
+  | "finance"
+  | "reviewer"
+  | "viewer";
+
+export type WorkspaceMemberStatus = "active" | "suspended" | "pending";
+
+export interface WorkspaceMember {
+  id: string;
+  profile_id: string;
+  client_id: string;
+  role: WorkspaceMemberRole;
+  department: string | null;
+  phone: string | null;
+  status: WorkspaceMemberStatus;
+  invited_by: string | null;
+  invited_at: string | null;
+  joined_at: string | null;
+  last_active_at: string | null;
+  created_at: string;
+  updated_at: string;
+  profile?: UserProfile;
+  inviter?: UserProfile;
+}
