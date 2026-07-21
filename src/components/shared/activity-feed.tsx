@@ -48,15 +48,15 @@ export function ActivityFeed({ activities, className }: ActivityFeedProps) {
         const Icon = activity.icon;
         const isLast = index === activities.length - 1;
         return (
-          <div key={activity.id} className="relative flex gap-4 pb-6 last:pb-0">
+          <div key={activity.id} className="group/entry relative flex gap-4 pb-6 last:pb-0 transition-all duration-200">
             {!isLast && (
-              <div className="absolute left-[15px] top-8 bottom-0 w-px bg-border" />
+              <div className="absolute left-[15px] top-8 bottom-0 w-px bg-gradient-to-b from-border to-transparent" />
             )}
-            <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-              <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+            <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted transition-all duration-200 group-hover/entry:bg-primary/10 group-hover/entry:shadow-sm">
+              <Icon className="h-3.5 w-3.5 text-muted-foreground transition-colors group-hover/entry:text-primary" />
             </div>
             <div className="flex-1 min-w-0 pt-0.5">
-              <p className="text-sm">
+              <p className="text-sm leading-relaxed">
                 <span className="font-medium">{activity.user}</span>{" "}
                 <span className="text-muted-foreground">{activity.action}</span>{" "}
                 <span className="font-medium">{activity.entityName}</span>

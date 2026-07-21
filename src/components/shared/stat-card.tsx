@@ -27,12 +27,12 @@ export function StatCard({
   className,
 }: StatCardProps) {
   return (
-    <Card className={cn("transition-shadow hover:shadow-md", className)}>
+    <Card className={cn("group hover-lift", className)}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className={cn("flex h-12 w-12 items-center justify-center rounded-full", iconColor)}>
-              <Icon className="h-6 w-6" />
+            <div className={cn("flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-200 group-hover:scale-110 group-hover:shadow-md", iconColor)}>
+              <Icon className="h-5 w-5" />
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">{title}</p>
@@ -42,10 +42,10 @@ export function StatCard({
           {change !== undefined && changeType && (
             <div
               className={cn(
-                "flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold",
+                "flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium",
                 changeType === "increase"
-                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                  : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                  ? "bg-success/10 text-success"
+                  : "bg-destructive/10 text-destructive"
               )}
             >
               {changeType === "increase" ? (

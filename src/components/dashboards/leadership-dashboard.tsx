@@ -139,36 +139,42 @@ export function LeadershipDashboard() {
       value: `$${totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       change: `${invoices.filter((i) => i.status === "paid").length} paid`,
+      iconColor: "bg-primary/10 text-primary",
     },
     {
       title: "Active Clients",
       value: String(clients.filter((c) => c.is_active).length),
       icon: Users,
       change: `${clients.length} total`,
+      iconColor: "bg-info/10 text-info",
     },
     {
       title: "Active Pods",
       value: String(pods.length),
       icon: Layers,
       change: `${totalTeamMembers} members`,
+      iconColor: "bg-success/10 text-success",
     },
     {
       title: "Completion Rate",
       value: requests.length > 0 ? `${Math.round((completedRequests.length / requests.length) * 100)}%` : "0%",
       icon: TrendingUp,
       change: `${completedRequests.length}/${requests.length}`,
+      iconColor: "bg-primary/10 text-primary",
     },
     {
       title: "Pending Approvals",
       value: String(pendingApprovals.length),
       icon: CheckCircle2,
       change: `${changeRequests.length} total CRs`,
+      iconColor: "bg-warning/10 text-warning",
     },
     {
       title: "Open Risks",
       value: String(requests.filter((r) => r.priority === "urgent").length),
       icon: AlertTriangle,
       change: "urgent priority",
+      iconColor: "bg-destructive/10 text-destructive",
     },
   ];
 
@@ -177,11 +183,11 @@ export function LeadershipDashboard() {
       <div className="space-y-6">
         <Skeleton className="h-28 w-full rounded-xl" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-lg" />)}
+          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
-          <Skeleton className="h-80 rounded-lg" />
-          <Skeleton className="h-80 rounded-lg" />
+          <Skeleton className="h-80 rounded-xl" />
+          <Skeleton className="h-80 rounded-xl" />
         </div>
       </div>
     );
@@ -190,7 +196,7 @@ export function LeadershipDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/5 p-6">
+      <div className="rounded-xl border bg-gradient-to-r from-primary/5 via-primary/[0.02] to-transparent p-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Welcome back, {userName}</h1>
@@ -199,7 +205,7 @@ export function LeadershipDashboard() {
           <div className="hidden md:flex items-center gap-4">
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Total Revenue</p>
-              <p className="text-2xl font-bold text-amber-500">${totalRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-primary">${totalRevenue.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -211,7 +217,9 @@ export function LeadershipDashboard() {
           <Card key={kpi.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{kpi.title}</CardTitle>
-              <kpi.icon className="h-4 w-4 text-muted-foreground" />
+              <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${kpi.iconColor}`}>
+                <kpi.icon className="h-4 w-4" />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{kpi.value}</div>
@@ -227,7 +235,7 @@ export function LeadershipDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-amber-500" />
+              <BarChart3 className="h-5 w-5 text-primary" />
               Pod Performance
             </CardTitle>
             <CardDescription>Team size by pod</CardDescription>
@@ -237,11 +245,11 @@ export function LeadershipDashboard() {
               {podPerformance.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={podPerformance} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#a1a1aa" }} />
-                    <YAxis tick={{ fontSize: 12, fill: "#a1a1aa" }} />
-                    <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid rgba(245,178,44,0.2)", borderRadius: "8px" }} />
-                    <Bar dataKey="members" fill="#f5b22c" radius={[4, 4, 0, 0]} name="Members" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
+                    <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "0.75rem", boxShadow: "var(--shadow-lg)" }} />
+                    <Bar dataKey="members" fill="hsl(243 75% 59%)" radius={[6, 6, 0, 0]} name="Members" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -255,7 +263,7 @@ export function LeadershipDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              <AlertTriangle className="h-5 w-5 text-primary" />
               Request Status
             </CardTitle>
             <CardDescription>Current status breakdown</CardDescription>
@@ -270,7 +278,7 @@ export function LeadershipDashboard() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid rgba(245,178,44,0.2)", borderRadius: "8px" }} />
+                    <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "0.75rem", boxShadow: "var(--shadow-lg)" }} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -287,7 +295,7 @@ export function LeadershipDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-amber-500" />
+              <Users className="h-5 w-5 text-primary" />
               Active Clients
             </CardTitle>
           </CardHeader>
@@ -296,7 +304,7 @@ export function LeadershipDashboard() {
               {clients.filter((c) => c.is_active).slice(0, 5).map((client) => {
                 const clientRequests = requests.filter((r) => r.client?.id === client.id);
                 return (
-                  <div key={client.id} className="flex items-center justify-between rounded-lg border p-3">
+                  <div key={client.id} className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium">{client.company_name}</p>
                       <p className="text-xs text-muted-foreground">{clientRequests.length} requests</p>
@@ -313,14 +321,14 @@ export function LeadershipDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-amber-500" />
+              <CheckCircle2 className="h-5 w-5 text-primary" />
               Pending Approvals
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {pendingApprovals.slice(0, 5).map((cr) => (
-                <div key={cr.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div key={cr.id} className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">{cr.title}</p>
                     <p className="text-xs text-muted-foreground">{cr.cost_estimate ? `$${cr.cost_estimate.toLocaleString()}` : "N/A"}</p>

@@ -9,7 +9,7 @@ export function StatCardSkeleton() {
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
+            <Skeleton className="h-11 w-11 rounded-xl" />
             <div className="space-y-2">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-7 w-16" />
@@ -35,7 +35,7 @@ export function ChartSkeleton() {
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="flex-1 flex flex-col gap-1">
                 <Skeleton
-                  className="w-full rounded-t"
+                  className="w-full rounded-t-lg"
                   style={{ height: `${((i * 23 + 37) % 150) + 50}px` }}
                 />
               </div>
@@ -104,21 +104,21 @@ export function ListSkeleton({ items = 5 }: { items?: number }) {
 
 export function DashboardSkeleton() {
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <div className="space-y-2">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-96" />
+        <Skeleton className="h-8 w-64 rounded-lg" />
+        <Skeleton className="h-4 w-96 rounded-lg" />
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <StatCardSkeleton key={i} />
         ))}
       </div>
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         <ChartSkeleton />
         <ChartSkeleton />
       </div>
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <TableSkeleton />
         </div>

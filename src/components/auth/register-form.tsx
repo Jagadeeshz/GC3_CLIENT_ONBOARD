@@ -7,7 +7,7 @@ import { UserX } from "lucide-react";
 
 export function RegisterForm() {
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md glass-card">
       <CardHeader className="text-center">
         <UserX className="mx-auto h-12 w-12 text-muted-foreground" />
         <CardTitle className="text-2xl font-bold">Invitation Only</CardTitle>

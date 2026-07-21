@@ -74,7 +74,7 @@ export function ClientLoginForm() {
 
   if (magicLinkSent) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md glass-card">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">Check Your Email</CardTitle>
           <CardDescription>
@@ -115,12 +115,12 @@ export function ClientLoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md glass-card">
       <CardHeader className="space-y-1 text-center">
-        <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+        <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
           <Mail className="h-6 w-6 text-primary" />
         </div>
-        <CardTitle className="text-2xl font-bold">Client Login</CardTitle>
+        <CardTitle className="text-2xl font-bold">Partner With Us</CardTitle>
         <CardDescription>
           Sign in with a secure magic link — no password needed.
         </CardDescription>
@@ -160,7 +160,7 @@ export function ClientLoginForm() {
           </Button>
           <div className="text-center text-sm text-muted-foreground">
             <Link href="/login/staff" className="text-primary hover:underline">
-              Staff? Sign in with password
+              Team member? Sign in with password
             </Link>
           </div>
         </CardFooter>

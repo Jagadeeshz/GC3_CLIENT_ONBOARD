@@ -149,10 +149,10 @@ export function CPIUDashboard() {
   const totalTeamMembers = pods.reduce((sum, p) => sum + (p.members?.length || 0), 0);
 
   const requestStatusData = [
-    { name: "In Progress", value: requests.filter((r) => r.status === "in_progress").length, color: "#f5b22c" },
-    { name: "Pending", value: requests.filter((r) => r.status === "pending").length, color: "#3b82f6" },
-    { name: "In Review", value: requests.filter((r) => r.status === "in_review").length, color: "#a78bfa" },
-    { name: "Completed", value: requests.filter((r) => r.status === "completed").length, color: "#22c55e" },
+    { name: "In Progress", value: requests.filter((r) => r.status === "in_progress").length, color: "hsl(243 75% 59%)" },
+    { name: "Pending", value: requests.filter((r) => r.status === "pending").length, color: "hsl(217 91% 60%)" },
+    { name: "In Review", value: requests.filter((r) => r.status === "in_review").length, color: "hsl(243 75% 69%)" },
+    { name: "Completed", value: requests.filter((r) => r.status === "completed").length, color: "hsl(142 71% 45%)" },
   ].filter((d) => d.value > 0);
 
   const statCards = [
@@ -187,11 +187,11 @@ export function CPIUDashboard() {
       <div className="space-y-6">
         <Skeleton className="h-28 w-full rounded-xl" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-lg" />)}
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
-          <Skeleton className="h-80 rounded-lg" />
-          <Skeleton className="h-80 rounded-lg" />
+          <Skeleton className="h-80 rounded-xl" />
+          <Skeleton className="h-80 rounded-xl" />
         </div>
       </div>
     );
@@ -200,7 +200,7 @@ export function CPIUDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/5 p-6">
+      <div className="rounded-xl border bg-gradient-to-r from-primary/5 via-primary/[0.02] to-transparent p-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Welcome back, {userName}</h1>
@@ -208,7 +208,7 @@ export function CPIUDashboard() {
           </div>
           <div className="hidden md:block text-right">
             <p className="text-sm text-muted-foreground">Platform Health</p>
-            <p className="text-2xl font-bold text-green-500">Excellent</p>
+            <p className="text-2xl font-bold text-success">Excellent</p>
           </div>
         </div>
       </div>
@@ -235,7 +235,7 @@ export function CPIUDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ClipboardList className="h-5 w-5 text-amber-500" />
+              <ClipboardList className="h-5 w-5 text-primary" />
               Request Status Distribution
             </CardTitle>
           </CardHeader>
@@ -249,7 +249,7 @@ export function CPIUDashboard() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid rgba(245,178,44,0.2)", borderRadius: "8px" }} />
+                    <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "0.75rem", boxShadow: "var(--shadow-lg)" }} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -264,7 +264,7 @@ export function CPIUDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Layers className="h-5 w-5 text-amber-500" />
+              <Layers className="h-5 w-5 text-primary" />
               Active Pods
             </CardTitle>
           </CardHeader>
@@ -300,7 +300,7 @@ export function CPIUDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Receipt className="h-5 w-5 text-amber-500" />
+              <Receipt className="h-5 w-5 text-primary" />
               Pending Payments
             </CardTitle>
           </CardHeader>
@@ -337,14 +337,14 @@ export function CPIUDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ClipboardList className="h-5 w-5 text-amber-500" />
+              <ClipboardList className="h-5 w-5 text-primary" />
               Active Requests
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {activeRequests.slice(0, 6).map((request) => (
-                <div key={request.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div key={request.id} className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">{request.title}</p>
                     <p className="text-xs text-muted-foreground">{request.client?.company_name || "N/A"} · {request.pod?.name || "Unassigned"}</p>
@@ -372,13 +372,13 @@ export function CPIUDashboard() {
         <CardContent>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
             {[
-              { label: "Create Client", icon: UserPlus, color: "text-amber-500", href: "/clients" },
+              { label: "Create Client", icon: UserPlus, color: "text-primary", href: "/clients" },
               { label: "Assign Pod", icon: Layers, color: "text-blue-500", href: "/pod" },
-              { label: "Generate Reports", icon: BarChart3, color: "text-green-500", href: "/reports" },
+              { label: "Generate Reports", icon: BarChart3, color: "text-success", href: "/reports" },
               { label: "Manage Invoices", icon: Receipt, color: "text-purple-500", href: "/invoices" },
               { label: "View Analytics", icon: TrendingUp, color: "text-cyan-500", href: "/analytics" },
             ].map((action) => (
-              <a key={action.label} href={action.href} className="flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors hover:bg-muted/50">
+              <a key={action.label} href={action.href} className="flex flex-col items-center gap-2 rounded-xl border p-4 transition-all duration-200 hover:bg-muted/50 hover:shadow-sm">
                 <action.icon className={`h-6 w-6 ${action.color}`} />
                 <span className="text-xs font-medium text-center">{action.label}</span>
               </a>

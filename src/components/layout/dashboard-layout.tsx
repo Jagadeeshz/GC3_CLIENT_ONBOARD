@@ -22,10 +22,17 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <div className="relative">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center animate-glow">
+              <span className="text-lg font-bold text-primary">GC</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">Loading your workspace...</p>
+          </div>
         </div>
       </div>
     );
@@ -47,7 +54,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-md"
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="fixed inset-y-0 left-0 z-50 w-64">
@@ -62,12 +69,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <div
         className={cn(
-          "transition-all duration-300",
+          "transition-all duration-300 ease-out",
           sidebarCollapsed ? "md:ml-16" : "md:ml-64"
         )}
       >
         <Header onMobileMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} />
-        <main className="p-4 md:p-6 lg:p-8">{children}</main>
+        <main className="p-4 lg:p-6 xl:p-8 animate-fade-in">{children}</main>
       </div>
     </div>
   );

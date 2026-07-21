@@ -171,11 +171,11 @@ export function OperationsDashboard() {
       <div className="space-y-6">
         <Skeleton className="h-28 w-full rounded-xl" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-lg" />)}
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
-          <Skeleton className="h-80 rounded-lg" />
-          <Skeleton className="h-80 rounded-lg" />
+          <Skeleton className="h-80 rounded-xl" />
+          <Skeleton className="h-80 rounded-xl" />
         </div>
       </div>
     );
@@ -184,7 +184,7 @@ export function OperationsDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/5 p-6">
+      <div className="rounded-xl bg-gradient-to-r from-primary/5 via-primary/[0.02] to-transparent p-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Welcome back, {userName}</h1>
@@ -221,7 +221,7 @@ export function OperationsDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-amber-500" />
+              <Users className="h-5 w-5 text-primary" />
               Resource Allocation
             </CardTitle>
             <CardDescription>Pod utilization across the platform</CardDescription>
@@ -247,7 +247,7 @@ export function OperationsDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Receipt className="h-5 w-5 text-amber-500" />
+              <Receipt className="h-5 w-5 text-primary" />
               Invoice Status Summary
             </CardTitle>
           </CardHeader>
@@ -262,7 +262,7 @@ export function OperationsDashboard() {
                   <p className="text-xs text-muted-foreground">{item.count} invoices</p>
                 </div>
               ))}
-              <div className="rounded-lg bg-muted/50 p-3 text-center">
+              <div className="rounded-xl bg-muted/50 p-4 text-center">
                 <p className="text-2xl font-bold">${invoices.reduce((s, i) => s + i.amount, 0).toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">Total Outstanding</p>
               </div>
@@ -275,7 +275,7 @@ export function OperationsDashboard() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Ticket className="h-5 w-5 text-amber-500" />
+            <Ticket className="h-5 w-5 text-primary" />
             Recent Requests
           </CardTitle>
           <CardDescription>Latest requests across the platform</CardDescription>
@@ -283,7 +283,7 @@ export function OperationsDashboard() {
         <CardContent>
           <div className="space-y-3">
             {requests.slice(0, 8).map((request) => (
-              <div key={request.id} className="flex items-center justify-between rounded-lg border p-3">
+              <div key={request.id} className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium">{request.title}</p>
                   <p className="text-xs text-muted-foreground">{request.client?.company_name || "N/A"} · {request.pod?.name || "Unassigned"} · {timeAgo(request.created_at)}</p>
@@ -307,13 +307,13 @@ export function OperationsDashboard() {
         <CardContent>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
             {[
-              { label: "Manage Operations", icon: Settings, color: "text-amber-500", href: "/pod" },
+              { label: "Manage Operations", icon: Settings, color: "text-primary", href: "/pod" },
               { label: "Resolve Tickets", icon: Ticket, color: "text-blue-500", href: "/requests" },
               { label: "Generate Reports", icon: BarChart3, color: "text-green-500", href: "/reports" },
               { label: "Resource Planning", icon: Users, color: "text-purple-500", href: "/pod" },
               { label: "Invoice Management", icon: Receipt, color: "text-cyan-500", href: "/invoices" },
             ].map((action) => (
-              <a key={action.label} href={action.href} className="flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors hover:bg-muted/50">
+              <a key={action.label} href={action.href} className="flex flex-col items-center gap-2 rounded-xl border p-4 transition-all duration-200 hover:bg-muted/50 hover:shadow-sm">
                 <action.icon className={`h-6 w-6 ${action.color}`} />
                 <span className="text-xs font-medium text-center">{action.label}</span>
               </a>

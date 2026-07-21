@@ -82,7 +82,7 @@ export function NotificationList({ notifications, className }: NotificationListP
         const content = (
           <div
             className={cn(
-              "flex items-start gap-3 rounded-lg border-l-4 bg-card p-4 transition-colors hover:bg-accent/50",
+              "flex items-start gap-3 rounded-xl border-l-4 bg-card p-4 transition-colors hover:bg-accent/50",
               config.border,
               !notification.read && "bg-accent/20"
             )}

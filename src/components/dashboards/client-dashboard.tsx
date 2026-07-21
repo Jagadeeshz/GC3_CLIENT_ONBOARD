@@ -203,11 +203,11 @@ export function ClientDashboard() {
       <div className="space-y-6">
         <Skeleton className="h-28 w-full rounded-xl" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-lg" />)}
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
-          <Skeleton className="h-64 rounded-lg" />
-          <Skeleton className="h-64 rounded-lg" />
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
         </div>
       </div>
     );
@@ -216,7 +216,7 @@ export function ClientDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/5 p-6">
+      <div className="rounded-xl border bg-gradient-to-r from-primary/5 via-primary/[0.02] to-transparent p-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
@@ -228,9 +228,9 @@ export function ClientDashboard() {
           </div>
           {wallet && (
             <div className="hidden md:block">
-              <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-2">
-                <p className="text-sm font-medium text-amber-500">Hours Wallet</p>
-                <p className="text-2xl font-bold text-amber-500">
+              <div className="rounded-xl bg-primary/10 px-4 py-2">
+                <p className="text-sm font-medium text-primary">Hours Wallet</p>
+                <p className="text-2xl font-bold text-primary">
                   {Math.round(wallet.remaining_hours)}{" "}
                   <span className="text-sm font-normal text-muted-foreground">
                     / {Math.round(wallet.total_hours)} hrs
@@ -264,7 +264,7 @@ export function ClientDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-amber-500" />
+              <Briefcase className="h-5 w-5 text-primary" />
               Active Requests
             </CardTitle>
             <CardDescription>Your current requests</CardDescription>
@@ -274,7 +274,7 @@ export function ClientDashboard() {
               <p className="text-sm text-muted-foreground">No active requests.</p>
             )}
             {activeRequests.slice(0, 5).map((req) => (
-              <div key={req.id} className="flex items-center justify-between rounded-lg border p-3">
+              <div key={req.id} className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium truncate">{req.title}</p>
                   <p className="text-xs text-muted-foreground">
@@ -292,7 +292,7 @@ export function ClientDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileCheck className="h-5 w-5 text-amber-500" />
+              <FileCheck className="h-5 w-5 text-primary" />
               Recent Deliverables
             </CardTitle>
             <CardDescription>Latest deliverables from your pods</CardDescription>
@@ -303,7 +303,7 @@ export function ClientDashboard() {
                 <p className="text-sm text-muted-foreground">No deliverables yet.</p>
               )}
               {recentDeliverables.map((deliverable) => (
-                <div key={deliverable.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div key={deliverable.id} className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium truncate">{deliverable.title}</p>
                     <p className="text-xs text-muted-foreground">
@@ -324,7 +324,7 @@ export function ClientDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Wallet className="h-5 w-5 text-amber-500" />
+              <Wallet className="h-5 w-5 text-primary" />
               Hours Wallet
             </CardTitle>
             <CardDescription>
@@ -337,7 +337,7 @@ export function ClientDashboard() {
             {wallet ? (
               <>
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-amber-500">{Math.round(wallet.remaining_hours)}</p>
+                  <p className="text-4xl font-bold text-primary">{Math.round(wallet.remaining_hours)}</p>
                   <p className="text-sm text-muted-foreground">hours remaining</p>
                 </div>
                 <Progress value={walletPct} className="h-3" />
@@ -361,16 +361,16 @@ export function ClientDashboard() {
           <CardContent>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
               {[
-                { label: "New Request", icon: Plus, color: "text-amber-500", href: "/requests" },
+                { label: "New Request", icon: Plus, color: "text-primary", href: "/requests" },
                 { label: "Upload Document", icon: Upload, color: "text-blue-500", href: "/documents" },
-                { label: "View Deliverables", icon: Eye, color: "text-green-500", href: "/deliverables" },
+                { label: "View Deliverables", icon: Eye, color: "text-success", href: "/deliverables" },
                 { label: "View Invoices", icon: CreditCard, color: "text-purple-500", href: "/invoices" },
                 { label: "Contact Team", icon: MessageSquare, color: "text-cyan-500", href: "/chat" },
               ].map((action) => (
                 <a
                   key={action.label}
                   href={action.href}
-                  className="flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                  className="flex flex-col items-center gap-2 rounded-xl border p-4 transition-all duration-200 hover:bg-muted/50 hover:shadow-sm"
                 >
                   <action.icon className={`h-6 w-6 ${action.color}`} />
                   <span className="text-xs font-medium text-center">{action.label}</span>
@@ -386,7 +386,7 @@ export function ClientDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Receipt className="h-5 w-5 text-amber-500" />
+              <Receipt className="h-5 w-5 text-primary" />
               Recent Invoices
             </CardTitle>
             <CardDescription>Your latest invoices and payment status</CardDescription>
@@ -423,14 +423,14 @@ export function ClientDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-amber-500" />
+              <Bell className="h-5 w-5 text-primary" />
               Recent Notifications
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {recentNotifications.map((notification) => (
-                <div key={notification.id} className="flex items-start gap-3 rounded-lg border p-3">
+                <div key={notification.id} className="flex items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50">
                   <div className="mt-0.5">
                     {notification.type === "warning" && <AlertCircle className="h-4 w-4 text-yellow-500" />}
                     {notification.type === "error" && <AlertCircle className="h-4 w-4 text-red-500" />}

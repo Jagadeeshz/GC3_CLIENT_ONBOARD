@@ -37,7 +37,7 @@ interface DashboardChartProps {
 }
 
 const DEFAULT_COLORS = [
-  "hsl(var(--primary))",
+  "hsl(243 75% 59%)",
   "#6366f1",
   "#10b981",
   "#f59e0b",
@@ -50,8 +50,8 @@ const DEFAULT_COLORS = [
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border bg-background p-3 shadow-md">
-      {label && <p className="mb-1 text-sm font-medium">{label}</p>}
+    <div className="rounded-xl border bg-background p-3 shadow-lg">
+      {label && <p className="mb-1.5 text-sm font-medium">{label}</p>}
       {payload.map((entry, i) => (
         <div key={i} className="flex items-center gap-2 text-sm">
           <div
@@ -156,7 +156,7 @@ export function DashboardChart({
                 key={key}
                 dataKey={key}
                 fill={colors[i % colors.length]}
-                radius={[4, 4, 0, 0]}
+                radius={[6, 6, 0, 0]}
                 maxBarSize={48}
               />
             ))}
@@ -217,7 +217,7 @@ export function DashboardChart({
   };
 
   return (
-    <Card className={cn("transition-shadow hover:shadow-md", className)}>
+    <Card className={cn("transition-shadow", className)}>
       <CardHeader>
         <CardTitle className="text-base font-semibold">{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}

@@ -108,7 +108,7 @@ export function AcceptInviteForm() {
 
   if (isVerifying) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md glass-card">
         <CardContent className="pt-6">
           <div className="flex flex-col items-center space-y-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -121,9 +121,9 @@ export function AcceptInviteForm() {
 
   if (isComplete) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md glass-card">
         <CardHeader className="text-center">
-          <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
+          <CheckCircle className="mx-auto h-12 w-12 text-success" />
           <CardTitle className="text-2xl font-bold">All Set!</CardTitle>
           <CardDescription>
             Your profile has been completed. Welcome to GC³ Portal.
@@ -145,7 +145,7 @@ export function AcceptInviteForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md glass-card">
       <CardHeader className="text-center">
         <UserCircle className="mx-auto h-12 w-12 text-primary" />
         <CardTitle className="text-2xl font-bold">Complete Your Profile</CardTitle>

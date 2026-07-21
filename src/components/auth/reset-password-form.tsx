@@ -54,10 +54,10 @@ export function ResetPasswordForm() {
 
   if (isSuccess) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md glass-card">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle className="h-6 w-6 text-green-600" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-success/10">
+            <CheckCircle className="h-6 w-6 text-success" />
           </div>
           <CardTitle className="text-2xl font-bold">Password Reset!</CardTitle>
           <CardDescription>
@@ -69,7 +69,7 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md glass-card">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
         <CardDescription>
@@ -132,7 +132,7 @@ export function ResetPasswordForm() {
             )}
           </Button>
           <Link href="/login/staff" className="text-sm text-primary hover:underline">
-            Back to Staff Login
+            Back to Team Hub
           </Link>
         </CardFooter>
       </form>

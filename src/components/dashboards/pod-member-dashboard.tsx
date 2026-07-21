@@ -138,6 +138,7 @@ export function PodMemberDashboard() {
       icon: CheckSquare,
       description: `${assignedTasks.filter((r) => r.priority === "high" || r.priority === "urgent").length} high priority`,
       trend: todayCount > 0 ? `${todayCount} due today` : "None due today",
+      iconColor: "bg-primary/10 text-primary",
     },
     {
       title: "Completed",
@@ -145,12 +146,14 @@ export function PodMemberDashboard() {
       icon: CheckCircle2,
       description: `of ${requests.length} total requests`,
       trend: `${requests.length > 0 ? Math.round((completedTasks.length / requests.length) * 100) : 0}% completion rate`,
+      iconColor: "bg-success/10 text-success",
     },
     {
       title: "Pending Deliverables",
       value: String(pendingDeliverables.length),
       icon: FileText,
       description: `${pendingDeliverables.filter((d) => d.status === "in_review").length} in review`,
+      iconColor: "bg-warning/10 text-warning",
     },
     {
       title: "My Pod",
@@ -158,6 +161,7 @@ export function PodMemberDashboard() {
       icon: Users,
       description: myPod ? `Managed by ${myPod.manager?.full_name || "N/A"}` : "No pod assigned",
       trend: myPod ? `${myPod.members.length} members` : undefined,
+      iconColor: "bg-info/10 text-info",
     },
   ];
 
@@ -166,11 +170,11 @@ export function PodMemberDashboard() {
       <div className="space-y-6">
         <Skeleton className="h-28 w-full rounded-xl" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-lg" />)}
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
-          <Skeleton className="h-64 rounded-lg" />
-          <Skeleton className="h-64 rounded-lg" />
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
         </div>
       </div>
     );
@@ -179,7 +183,7 @@ export function PodMemberDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/5 p-6">
+      <div className="rounded-xl border bg-gradient-to-r from-primary/5 via-primary/[0.02] to-transparent p-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
@@ -189,7 +193,7 @@ export function PodMemberDashboard() {
               {myPod ? (
                 <>
                   You&apos;re assigned to{" "}
-                  <span className="font-semibold text-amber-500">{myPod.name}</span> managed by{" "}
+                  <span className="font-semibold text-primary">{myPod.name}</span> managed by{" "}
                   {myPod.manager?.full_name || "N/A"}.
                 </>
               ) : (
@@ -199,8 +203,8 @@ export function PodMemberDashboard() {
           </div>
           {todayCount > 0 && (
             <div className="hidden md:flex items-center gap-2">
-              <Zap className="h-5 w-5 text-amber-500" />
-              <span className="text-sm font-medium text-amber-500">{todayCount} task{todayCount !== 1 ? "s" : ""} due today</span>
+              <Zap className="h-5 w-5 text-primary" />
+              <span className="text-sm font-medium text-primary">{todayCount} task{todayCount !== 1 ? "s" : ""} due today</span>
             </div>
           )}
         </div>
@@ -212,12 +216,14 @@ export function PodMemberDashboard() {
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${stat.iconColor}`}>
+                <stat.icon className="h-4 w-4" />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
               <p className="text-xs text-muted-foreground">{stat.description}</p>
-              {stat.trend && <p className="mt-1 text-xs text-amber-500">{stat.trend}</p>}
+              {stat.trend && <p className="mt-1 text-xs text-primary">{stat.trend}</p>}
             </CardContent>
           </Card>
         ))}
@@ -229,7 +235,7 @@ export function PodMemberDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckSquare className="h-5 w-5 text-amber-500" />
+              <CheckSquare className="h-5 w-5 text-primary" />
               Assigned Tasks
             </CardTitle>
             <CardDescription>Tasks assigned to you</CardDescription>
@@ -240,11 +246,11 @@ export function PodMemberDashboard() {
                 <p className="text-sm text-muted-foreground">No assigned tasks.</p>
               )}
               {assignedTasks.slice(0, 6).map((task) => (
-                <div key={task.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div key={task.id} className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div className={`h-2 w-2 rounded-full flex-shrink-0 ${
                       task.status === "completed" ? "bg-green-500" :
-                      task.status === "in_progress" ? "bg-amber-500" : "bg-gray-400"
+                      task.status === "in_progress" ? "bg-primary" : "bg-muted-foreground"
                     }`} />
                     <div className="min-w-0">
                       <p className={`text-sm font-medium truncate ${task.status === "completed" ? "line-through text-muted-foreground" : ""}`}>
@@ -269,7 +275,7 @@ export function PodMemberDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-amber-500" />
+              <FileText className="h-5 w-5 text-primary" />
               Pending Deliverables
             </CardTitle>
             <CardDescription>Deliverables awaiting your action</CardDescription>
@@ -280,7 +286,7 @@ export function PodMemberDashboard() {
                 <p className="text-sm text-muted-foreground">No pending deliverables.</p>
               )}
               {pendingDeliverables.slice(0, 5).map((deliverable) => (
-                <div key={deliverable.id} className="rounded-lg border p-3 space-y-2">
+                <div key={deliverable.id} className="rounded-xl border p-3 space-y-2 transition-colors hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">{deliverable.title}</p>
                     <StatusBadge status={deliverable.status} />
@@ -301,7 +307,7 @@ export function PodMemberDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-amber-500" />
+              <Users className="h-5 w-5 text-primary" />
               My Pod
             </CardTitle>
             <CardDescription>
@@ -313,7 +319,7 @@ export function PodMemberDashboard() {
               <div className="space-y-3">
                 {myPod.members.map((m) => (
                   <div key={m.id} className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/10 text-xs font-semibold text-amber-500">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
                       {m.member?.full_name?.split(" ").map((n) => n[0]).join("") || "?"}
                     </div>
                     <div>
@@ -338,16 +344,18 @@ export function PodMemberDashboard() {
           <CardContent>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: "Update Task", icon: Edit3, color: "text-amber-500", href: "/requests" },
-                { label: "Upload Deliverable", icon: Upload, color: "text-blue-500", href: "/deliverables" },
-                { label: "Log Hours", icon: Timer, color: "text-green-500", href: "/hours-wallet" },
+                { label: "Update Task", icon: Edit3, color: "text-primary", bg: "bg-primary/10", href: "/requests" },
+                { label: "Upload Deliverable", icon: Upload, color: "text-info", bg: "bg-info/10", href: "/deliverables" },
+                { label: "Log Hours", icon: Timer, color: "text-success", bg: "bg-success/10", href: "/hours-wallet" },
               ].map((action) => (
                 <a
                   key={action.label}
                   href={action.href}
-                  className="flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                  className="flex flex-col items-center gap-2.5 rounded-xl border p-4 transition-all duration-200 hover:bg-muted/50 hover:shadow-sm"
                 >
-                  <action.icon className={`h-6 w-6 ${action.color}`} />
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${action.bg}`}>
+                    <action.icon className={`h-5 w-5 ${action.color}`} />
+                  </div>
                   <span className="text-xs font-medium">{action.label}</span>
                 </a>
               ))}

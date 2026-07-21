@@ -193,11 +193,11 @@ export function PodManagerDashboard() {
       <div className="space-y-6">
         <Skeleton className="h-28 w-full rounded-xl" />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-lg" />)}
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
-          <Skeleton className="h-80 rounded-lg" />
-          <Skeleton className="h-80 rounded-lg" />
+          <Skeleton className="h-80 rounded-xl" />
+          <Skeleton className="h-80 rounded-xl" />
         </div>
       </div>
     );
@@ -206,7 +206,7 @@ export function PodManagerDashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="rounded-xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/5 p-6">
+      <div className="rounded-xl bg-gradient-to-r from-primary/5 via-primary/[0.02] to-transparent p-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
@@ -217,9 +217,9 @@ export function PodManagerDashboard() {
             </p>
           </div>
           <div className="hidden md:block">
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-2">
-              <p className="text-sm font-medium text-amber-500">Team Utilization</p>
-              <p className="text-2xl font-bold text-amber-500">{utilizationPct}%</p>
+            <div className="rounded-xl bg-primary/10 px-4 py-2">
+              <p className="text-sm font-medium text-primary">Team Utilization</p>
+              <p className="text-2xl font-bold text-primary">{utilizationPct}%</p>
             </div>
           </div>
         </div>
@@ -247,7 +247,7 @@ export function PodManagerDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-amber-500" />
+              <Users className="h-5 w-5 text-primary" />
               Team Overview
             </CardTitle>
             <CardDescription>Member workload and utilization</CardDescription>
@@ -262,8 +262,8 @@ export function PodManagerDashboard() {
                 const memberCompleted = requests.filter((r) => r.assigned_to === m.member?.id && r.status === "completed").length;
                 const pct = memberReqCount > 0 ? Math.round((memberCompleted / memberReqCount) * 100) : 0;
                 return (
-                  <div key={m.id} className="flex items-center gap-3 rounded-lg border p-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-xs font-semibold text-amber-500">
+                  <div key={m.id} className="flex items-center gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
                       {m.member?.full_name?.split(" ").map((n) => n[0]).join("") || "?"}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -287,7 +287,7 @@ export function PodManagerDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ClipboardList className="h-5 w-5 text-amber-500" />
+              <ClipboardList className="h-5 w-5 text-primary" />
               Pending Requests
             </CardTitle>
             <CardDescription>Requests awaiting assignment</CardDescription>
@@ -337,7 +337,7 @@ export function PodManagerDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-amber-500" />
+              <FileText className="h-5 w-5 text-primary" />
               Change Requests
             </CardTitle>
             <CardDescription>Pending your review</CardDescription>
@@ -348,7 +348,7 @@ export function PodManagerDashboard() {
                 <p className="text-sm text-muted-foreground">No change requests.</p>
               )}
               {changeRequests.slice(0, 5).map((cr) => (
-                <div key={cr.id} className="rounded-lg border p-3 space-y-2">
+                <div key={cr.id} className="rounded-xl border p-3 space-y-2 transition-colors hover:bg-muted/50">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">{cr.title}</p>
                     <StatusBadge status={cr.status} />
@@ -370,7 +370,7 @@ export function PodManagerDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-amber-500" />
+              <BarChart3 className="h-5 w-5 text-primary" />
               Team Productivity
             </CardTitle>
             <CardDescription>Tasks completed per team member</CardDescription>
@@ -380,16 +380,16 @@ export function PodManagerDashboard() {
               {teamProductivity.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={teamProductivity} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#a1a1aa" }} />
-                    <YAxis tick={{ fontSize: 12, fill: "#a1a1aa" }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid rgba(245,178,44,0.2)", borderRadius: "8px" }}
+                      contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "0.75rem", boxShadow: "var(--shadow-lg)" }}
                       labelStyle={{ color: "#f5b22c" }}
                     />
                     <Legend />
-                    <Bar dataKey="completed" fill="#f5b22c" radius={[4, 4, 0, 0]} name="Completed" />
-                    <Bar dataKey="inProgress" fill="#3b82f6" radius={[4, 4, 0, 0]} name="In Progress" />
+                    <Bar dataKey="completed" fill="hsl(243 75% 59%)" radius={[4, 4, 0, 0]} name="Completed" />
+                    <Bar dataKey="inProgress" fill="hsl(217 91% 60%)" radius={[4, 4, 0, 0]} name="In Progress" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -411,7 +411,7 @@ export function PodManagerDashboard() {
         <CardContent>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
             {[
-              { label: "Assign Tasks", icon: UserPlus, color: "text-amber-500", href: "/requests" },
+              { label: "Assign Tasks", icon: UserPlus, color: "text-primary", href: "/requests" },
               { label: "Approve Deliverables", icon: CheckCircle2, color: "text-green-500", href: "/deliverables" },
               { label: "Review Change Requests", icon: FileText, color: "text-blue-500", href: "/change-requests" },
               { label: "Manage Team", icon: Users, color: "text-purple-500", href: "/pod" },
@@ -420,7 +420,7 @@ export function PodManagerDashboard() {
               <a
                 key={action.label}
                 href={action.href}
-                className="flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                className="flex flex-col items-center gap-2 rounded-xl border p-4 transition-all duration-200 hover:bg-muted/50 hover:shadow-sm"
               >
                 <action.icon className={`h-6 w-6 ${action.color}`} />
                 <span className="text-xs font-medium text-center">{action.label}</span>
