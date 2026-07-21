@@ -324,23 +324,21 @@ export default function HomePage() {
               {/* Badge */}
               <div className="animate-fade-in-up inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm">
                 <Sparkles className="h-3.5 w-3.5" />
-                Enterprise-Grade Collaboration Platform
+                Modern Enterprise Workspace
               </div>
 
               {/* Heading */}
               <h1 className="animate-fade-in-up stagger-1 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                Connect with your
+                Empowering Teams.
                 <br />
                 <span className="bg-gradient-to-r from-primary via-primary to-info bg-clip-text text-transparent">
-                  delivery team
+                  Delivering Excellence.
                 </span>
               </h1>
 
               {/* Subtitle */}
               <p className="animate-fade-in-up stagger-2 mx-auto max-w-[700px] text-lg leading-relaxed text-muted-foreground sm:text-xl">
-                A{" "}
-                <span className="font-semibold text-foreground">secure, centralized workspace</span>{" "}
-                for managing requests, monitoring progress, accessing deliverables, and collaborating with your dedicated GC³ team.
+                Bring teams, clients, and projects together in one secure workspace designed for modern collaboration, intelligent workflows, and exceptional delivery.
               </p>
 
               {/* Single CTA */}
