@@ -136,15 +136,17 @@ export default function HomePage() {
               </h1>
 
               {/* Subtitle */}
-              <p className="fade-rise-delay mx-auto mt-8 max-w-2xl text-base leading-relaxed text-white/60 sm:text-lg md:text-xl">
+              <p className="fade-rise-delay mx-auto mt-10 max-w-2xl text-base leading-relaxed text-white/60 sm:text-lg md:text-xl">
                 Bring teams, clients, and projects together in one secure enterprise workspace designed to simplify communication, accelerate collaboration, and deliver exceptional results through intelligent workflows.
               </p>
 
-              {/* CTA */}
-              <div className="fade-rise-delay-2 mt-10">
+              {/* CTA — Only primary CTA on the entire page */}
+              <div className="fade-rise-delay-2 mt-14">
                 <Link href="/login/client">
-                  <button className="group relative inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-10 py-5 text-lg font-medium text-white shadow-[0_0_30px_rgba(99,102,241,0.3)] backdrop-blur-xl transition-all duration-500 hover:border-white/30 hover:bg-white/15 hover:shadow-[0_0_50px_rgba(99,102,241,0.5)] hover:scale-105 active:scale-[0.98]">
-                    <Globe className="h-5 w-5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
+                  <button
+                    className="group relative inline-flex items-center gap-3 rounded-full border border-white/30 bg-[rgba(255,255,255,0.12)] px-10 py-5 text-lg font-semibold text-white shadow-[0_8px_40px_rgba(79,70,229,0.45)] backdrop-blur-xl transition-all duration-300 ease-out hover:scale-105 hover:shadow-[0_0_40px_rgba(79,70,229,0.55)] hover:border-white/40 hover:bg-[rgba(255,255,255,0.18)] active:scale-[0.98]"
+                  >
+                    <Globe className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
                     Partner With Us
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
                   </button>
