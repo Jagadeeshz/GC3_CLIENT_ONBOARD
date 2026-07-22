@@ -5,7 +5,13 @@ import { cookies } from "next/headers";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const error = searchParams.get("error");
   const next = searchParams.get("next") ?? "/client/dashboard";
+
+  if (error) {
+    console.error("[Auth Callback] Supabase returned error:", error);
+    return NextResponse.redirect(`${origin}/login?error=expired_link`);
+  }
 
   if (code) {
     const cookieStore = await cookies();
