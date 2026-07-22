@@ -68,11 +68,27 @@ export async function middleware(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
   if (user) {
+    const isLoginPage = pathname === "/login" || pathname.startsWith("/login/");
+    const isRegisterPage = pathname === "/register";
+
+    if (isLoginPage || isRegisterPage) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      const role = profile?.role || "";
+      const url = request.nextUrl.clone();
+      url.pathname = getRoleDashboardPath(role);
+      return NextResponse.redirect(url);
+    }
+
     const { data: profile } = await supabase
       .from("profiles")
       .select("role, is_active")
@@ -82,12 +98,18 @@ export async function middleware(request: NextRequest) {
     if (profile && profile.is_active === false) {
       await supabase.auth.signOut();
       const url = request.nextUrl.clone();
-      url.pathname = "/";
+      url.pathname = "/login";
       url.searchParams.set("error", "account_deactivated");
       return NextResponse.redirect(url);
     }
 
     const role = profile?.role || "";
+
+    if (pathname === "/" && role !== "client") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
 
     for (const route of routeRoleMap) {
       if (pathname.startsWith(route.prefix)) {

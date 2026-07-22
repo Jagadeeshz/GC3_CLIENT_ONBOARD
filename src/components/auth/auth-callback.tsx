@@ -99,7 +99,14 @@ export function AuthCallback() {
 
           const { data: { user } } = await supabase.auth.getUser();
 
+          if (cancelled) return;
+
           if (user) {
+            if (next) {
+              router.push(next);
+              return;
+            }
+
             await ensureProfile(supabase, user);
             await handleWorkspaceMember(supabase, user);
 
@@ -111,11 +118,11 @@ export function AuthCallback() {
 
             const role = profile?.role || (user.user_metadata?.role as string) || "";
             if (!cancelled) {
-              router.push(next || getDashboardPath(role));
+              router.push(getDashboardPath(role));
             }
           } else {
             if (!cancelled) {
-              router.push(next || "/dashboard");
+              router.push("/login");
             }
           }
         } else {
@@ -131,7 +138,14 @@ export function AuthCallback() {
         if (!error) {
           const { data: { user } } = await supabase.auth.getUser();
 
+          if (cancelled) return;
+
           if (user) {
+            if (next) {
+              router.push(next);
+              return;
+            }
+
             await ensureProfile(supabase, user);
             await handleWorkspaceMember(supabase, user);
 
@@ -143,11 +157,11 @@ export function AuthCallback() {
 
             const role = profile?.role || (user.user_metadata?.role as string) || "";
             if (!cancelled) {
-              router.push(next || getDashboardPath(role));
+              router.push(getDashboardPath(role));
             }
           } else {
             if (!cancelled) {
-              router.push(next || "/dashboard");
+              router.push("/login");
             }
           }
         } else {
