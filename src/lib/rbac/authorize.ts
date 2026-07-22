@@ -40,7 +40,7 @@ export async function authorize(
     };
   }
 
-  if (!profile.is_active) {
+  if (profile.is_active === false) {
     return {
       authorized: false,
       response: NextResponse.json(
@@ -98,7 +98,7 @@ export async function authorizeRole(
     };
   }
 
-  if (!profile.is_active) {
+  if (profile.is_active === false) {
     return {
       authorized: false,
       response: NextResponse.json(

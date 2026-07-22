@@ -10,7 +10,7 @@ const publicRoutes = [
   "/forgot-password",
   "/reset-password",
   "/auth/callback",
-  "/auth/accept-invite",
+  "/accept-invite",
   "/session-expired",
   "/unauthorized",
   "/book-demo",
@@ -64,6 +64,9 @@ export async function middleware(request: NextRequest) {
   );
 
   if (!user && !isPublicRoute) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);

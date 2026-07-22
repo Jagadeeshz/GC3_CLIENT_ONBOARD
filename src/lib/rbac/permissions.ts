@@ -345,9 +345,12 @@ export function getRoleNavigation(role: UserRole) {
       { title: "Admin", href: "/admin", icon: "Shield" },
     ],
     operations_team: [
-      { title: "Operations", href: "/operations", icon: "Wrench" },
-      { title: "Support", href: "/support", icon: "Headphones" },
+      { title: "Requests", href: "/requests", icon: "FileText" },
+      { title: "Clients", href: "/clients", icon: "Building2" },
+      { title: "Deliverables", href: "/deliverables", icon: "Package" },
       { title: "Invoices", href: "/invoices", icon: "Receipt" },
+      { title: "Documents", href: "/documents", icon: "FolderOpen" },
+      { title: "Change Requests", href: "/change-requests", icon: "GitBranch" },
       { title: "Reports", href: "/reports", icon: "BarChart3" },
     ],
   };

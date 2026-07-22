@@ -11,7 +11,7 @@ export async function GET() {
   const { data: memberships, error: memberError } = await supabase
     .from("pod_members")
     .select("pod_id")
-    .eq("user_id", auth.user.id);
+    .eq("profile_id", auth.user.id);
 
   if (memberError) {
     return NextResponse.json({ error: memberError.message }, { status: 500 });

@@ -93,7 +93,7 @@ export function AuthCallback() {
 
         if (!error) {
           if (type === "signup") {
-            router.push("/auth/accept-invite");
+            router.push("/accept-invite");
             return;
           }
 
@@ -120,7 +120,7 @@ export function AuthCallback() {
           }
         } else {
           if (!cancelled) {
-            router.push("/?error=verification_failed");
+            router.push("/login/client?error=verification_failed");
           }
         }
       } else if (code) {
@@ -152,12 +152,12 @@ export function AuthCallback() {
           }
         } else {
           if (!cancelled) {
-            router.push("/?error=exchange_failed");
+            router.push("/login/client?error=exchange_failed");
           }
         }
       } else {
         if (!cancelled) {
-          router.push("/");
+          router.push("/login");
         }
       }
     };
