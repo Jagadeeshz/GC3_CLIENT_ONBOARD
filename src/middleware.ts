@@ -59,8 +59,12 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const hasCode = request.nextUrl.searchParams.has("code");
+  const codeParam = request.nextUrl.searchParams.get("code");
+
+  console.log(`[Middleware] ${pathname} code=${codeParam ? codeParam.slice(0, 8) + "..." : "none"}`);
 
   if (pathname === "/" && hasCode) {
+    console.log(`[Middleware] Redirecting /?code=... → /auth/callback?code=...`);
     const url = request.nextUrl.clone();
     url.pathname = "/auth/callback";
     url.search = request.nextUrl.search;
