@@ -14,6 +14,27 @@ export function useAuth() {
   const router = useRouter();
   const supabase = useMemo(() => createSupabaseClient(), []);
 
+  const buildFallbackUser = useCallback(
+    (rawUser: User): UserProfile => ({
+      id: rawUser.id,
+      email: rawUser.email ?? "",
+      full_name:
+        rawUser.user_metadata?.full_name ??
+        rawUser.user_metadata?.name ??
+        rawUser.email?.split("@")[0] ??
+        "User",
+      avatar_url: rawUser.user_metadata?.avatar_url ?? null,
+      role: (rawUser.user_metadata?.role as UserRole) ?? "client",
+      phone: rawUser.user_metadata?.phone ?? null,
+      company: rawUser.user_metadata?.company ?? null,
+      is_active: true,
+      last_login_at: null,
+      created_at: rawUser.created_at ?? new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }),
+    []
+  );
+
   const fetchUserProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
@@ -40,7 +61,7 @@ export function useAuth() {
         if (session?.user) {
           setRawUser(session.user);
           const profile = await fetchUserProfile(session.user.id);
-          if (mounted) setUser(profile);
+          if (mounted) setUser(profile ?? buildFallbackUser(session.user));
         }
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -58,13 +79,13 @@ export function useAuth() {
         if (event === "SIGNED_IN" && session?.user) {
           setRawUser(session.user);
           const profile = await fetchUserProfile(session.user.id);
-          setUser(profile);
+          setUser(profile ?? buildFallbackUser(session.user));
         } else if (event === "SIGNED_OUT") {
           setUser(null);
           setRawUser(null);
         } else if (event === "TOKEN_REFRESHED" && session?.user) {
           const profile = await fetchUserProfile(session.user.id);
-          setUser(profile);
+          setUser(profile ?? buildFallbackUser(session.user));
         }
         setIsLoading(false);
       }
@@ -74,7 +95,7 @@ export function useAuth() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [supabase, fetchUserProfile]);
+  }, [supabase, fetchUserProfile, buildFallbackUser]);
 
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);

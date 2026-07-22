@@ -38,7 +38,23 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center animate-glow">
+              <span className="text-lg font-bold text-primary">GC</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">Signing you in...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

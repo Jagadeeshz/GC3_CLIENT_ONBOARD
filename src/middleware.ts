@@ -76,7 +76,7 @@ export async function middleware(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
-    if (profile && !profile.is_active) {
+    if (profile && profile.is_active === false) {
       await supabase.auth.signOut();
       const url = request.nextUrl.clone();
       url.pathname = "/";
