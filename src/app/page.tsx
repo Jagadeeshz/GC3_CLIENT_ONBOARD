@@ -95,8 +95,20 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Right: Mobile menu button */}
+              {/* Right: Desktop nav + Mobile menu button */}
               <div className="flex items-center gap-3">
+                <Link
+                  href="/book-demo"
+                  className="hidden lg:inline-flex rounded-full px-4 py-2 text-sm font-medium text-white/60 transition-all duration-300 hover:text-white hover:bg-white/5"
+                >
+                  Book Demo
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="hidden lg:inline-flex rounded-full px-4 py-2 text-sm font-medium text-white/60 transition-all duration-300 hover:text-white hover:bg-white/5"
+                >
+                  Pricing
+                </Link>
                 <button className="lg:hidden rounded-full p-2 text-white/70 hover:text-white hover:bg-white/10 transition-colors">
                   <Menu className="h-5 w-5" />
                 </button>

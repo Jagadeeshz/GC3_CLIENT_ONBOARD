@@ -70,22 +70,6 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    const isLoginPage = pathname === "/login" || pathname.startsWith("/login/");
-    const isRegisterPage = pathname === "/register";
-
-    if (isLoginPage || isRegisterPage) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      const role = profile?.role || "";
-      const url = request.nextUrl.clone();
-      url.pathname = getRoleDashboardPath(role);
-      return NextResponse.redirect(url);
-    }
-
     const { data: profile } = await supabase
       .from("profiles")
       .select("role, is_active")
