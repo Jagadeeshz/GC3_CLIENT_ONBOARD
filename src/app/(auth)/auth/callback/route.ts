@@ -6,12 +6,18 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const error = searchParams.get("error");
-  const next = searchParams.get("next") ?? "/client/dashboard";
+  const error_description = searchParams.get("error_description");
 
-  if (error) {
-    console.error("[Auth Callback] Supabase returned error:", error);
-    return NextResponse.redirect(`${origin}/login?error=expired_link`);
+  // Handle expired or invalid link errors gracefully
+  if (error || error_description) {
+    console.error("Magic link error:", error, error_description);
+    return NextResponse.redirect(
+      `${origin}/login?error=${encodeURIComponent(error_description || error || "auth-failed")}`
+    );
   }
+
+  // Determine target path (Explicit default: /client/dashboard)
+  const next = searchParams.get("next") ?? "/client/dashboard";
 
   if (code) {
     const cookieStore = await cookies();
@@ -29,20 +35,21 @@ export async function GET(request: Request) {
                 cookieStore.set(name, value, options)
               );
             } catch {
-              // Ignore from Server Component
+              // Called from Server Component
             }
           },
         },
       }
     );
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error) {
+    if (!exchangeError) {
+      // Success -> Redirect directly to Client Dashboard
       return NextResponse.redirect(`${origin}${next}`);
     }
 
-    console.error("Supabase Callback PKCE Error:", error.message);
+    console.error("PKCE Exchange Error:", exchangeError.message);
   }
 
   return NextResponse.redirect(`${origin}/login?error=auth-failed`);

@@ -1097,3 +1097,25 @@ Supabase Callback PKCE Error: PKCE code verifier not found in storage. This can 
  GET /auth/callback?code=d44a3cc0-cac1-495e-aaa4-83c6bd13871e 307 in 452ms (next.js: 8ms, proxy.ts: 17ms, application-code: 427ms)
 [Middleware] /login code=none
  GET /login?error=auth-failed 200 in 1102ms (next.js: 43ms, proxy.ts: 62ms, application-code: 997ms)
+[Middleware] / code=none
+ GET / 200 in 656ms (next.js: 71ms, proxy.ts: 59ms, application-code: 526ms)
+[Middleware] / code=none
+ GET / 200 in 252ms (next.js: 11ms, proxy.ts: 14ms, application-code: 227ms)
+[Middleware] /login/client code=none
+ GET /login/client 200 in 106ms (next.js: 22ms, proxy.ts: 9ms, application-code: 75ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[Middleware] /auth/callback code=0617b4f5...
+Supabase Callback PKCE Error: PKCE code verifier not found in storage. This can happen if the auth flow was initiated in a different browser or device, or if the storage was cleared. For SSR frameworks (Next.js, SvelteKit, etc.), use @supabase/ssr on both the server and client to store the code verifier in cookies.
+ GET /auth/callback?code=0617b4f5-512a-4a31-aa16-3e040d53ab86&next=%2Fclient%2Fdashboard 307 in 30ms (next.js: 8ms, proxy.ts: 8ms, application-code: 15ms)
+[Middleware] /login code=none
+ GET /login?error=auth-failed 200 in 233ms (next.js: 12ms, proxy.ts: 10ms, application-code: 211ms)
+[Middleware] /login/client code=none
+[Middleware] /login code=none
+[Middleware] /login/client code=none
+[Middleware] /login code=none
+[Middleware] /login code=none
+ GET /login/client 200 in 2.8s (next.js: 1334ms, proxy.ts: 215ms, application-code: 1236ms)
+ GET /login?error=auth-failed 200 in 2.7s (next.js: 1768ms, proxy.ts: 10ms, application-code: 910ms)
+ GET /login/client 200 in 822ms (next.js: 162ms, proxy.ts: 53ms, application-code: 607ms)
+ GET /login?error=auth-failed 200 in 770ms (next.js: 20ms, proxy.ts: 8ms, application-code: 742ms)
+ GET /login?error=auth-failed 200 in 457ms (next.js: 181ms, proxy.ts: 141ms, application-code: 135ms)
