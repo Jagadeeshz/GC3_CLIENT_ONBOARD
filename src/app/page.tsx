@@ -95,14 +95,8 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Right: Partner With Us */}
+              {/* Right: Mobile menu button */}
               <div className="flex items-center gap-3">
-                <Link href="/login/client" className="hidden sm:block">
-                  <button className="liquid-glass rounded-full px-5 py-2 text-sm font-medium text-white transition-all duration-300 hover:scale-105 active:scale-[0.98]">
-                    Partner With Us
-                  </button>
-                </Link>
-                {/* Mobile menu button */}
                 <button className="lg:hidden rounded-full p-2 text-white/70 hover:text-white hover:bg-white/10 transition-colors">
                   <Menu className="h-5 w-5" />
                 </button>
@@ -148,13 +142,14 @@ export default function HomePage() {
               </p>
 
               {/* CTA */}
-              <div className="fade-rise-delay-2 mt-10">
-                <Link href="/login/client">
-                  <button className="liquid-glass group inline-flex items-center gap-3 rounded-full px-8 py-4 text-base font-medium text-white transition-all duration-300 hover:scale-105 active:scale-[0.98]">
-                    <Globe className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
-                    Partner With Us
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </button>
+              <div className="fade-rise-delay-2 mt-14">
+                <Link
+                  href="/login/client"
+                  className="group relative inline-flex items-center gap-3 rounded-full border border-white/30 bg-[rgba(255,255,255,0.12)] px-10 py-5 text-lg font-semibold text-white shadow-[0_8px_40px_rgba(79,70,229,0.45)] backdrop-blur-xl transition-all duration-300 ease-out hover:scale-105 hover:shadow-[0_0_40px_rgba(79,70,229,0.55)] hover:border-white/40 hover:bg-[rgba(255,255,255,0.18)] active:scale-[0.98]"
+                >
+                  <Globe className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                  Partner With Us
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
                 </Link>
               </div>
             </div>
@@ -217,19 +212,17 @@ export default function HomePage() {
                 Join 120+ enterprises who rely on GC³ Portal for secure project management,
                 real-time collaboration, and transparent delivery workflows.
               </p>
-              <div className="mt-8 flex items-center justify-center gap-4">
-                <Link href="/login/client">
-                  <Button size="lg" className="group shadow-lg shadow-primary/20">
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                <Button size="lg" className="group shadow-lg shadow-primary/20" asChild>
+                  <Link href="/login/client">
                     <LayoutDashboard className="mr-2 h-5 w-5" />
                     Get Started
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Button>
-                </Link>
-                <Link href="/book-demo">
-                  <Button size="lg" variant="outline">
-                    Book a Demo
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/book-demo">Book a Demo</Link>
+                </Button>
               </div>
             </div>
           </div>
