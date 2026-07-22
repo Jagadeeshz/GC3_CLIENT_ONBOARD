@@ -83,7 +83,10 @@ export function AuthCallback() {
       const code = searchParams.get("code");
       const next = searchParams.get("next");
 
+      console.log("[AuthCallback] Params:", { token_hash: !!token_hash, type, code: !!code, next });
+
       if (token_hash && type) {
+        console.log("[AuthCallback] Verifying OTP token_hash...");
         const { error } = await supabase.auth.verifyOtp({
           type: type as "signup" | "magiclink",
           token_hash,
@@ -92,22 +95,27 @@ export function AuthCallback() {
         if (cancelled) return;
 
         if (!error) {
+          console.log("[AuthCallback] OTP verified successfully");
           if (type === "signup") {
             router.push("/accept-invite");
             return;
           }
 
           const { data: { user } } = await supabase.auth.getUser();
+          console.log("[AuthCallback] getUser after OTP:", user?.id, user?.email);
 
           if (cancelled) return;
 
           if (user) {
             if (next) {
+              console.log("[AuthCallback] Redirecting to next:", next);
               router.push(next);
               return;
             }
 
+            console.log("[AuthCallback] Ensuring profile...");
             await ensureProfile(supabase, user);
+            console.log("[AuthCallback] Handling workspace member...");
             await handleWorkspaceMember(supabase, user);
 
             const { data: profile } = await supabase
@@ -117,36 +125,45 @@ export function AuthCallback() {
               .single();
 
             const role = profile?.role || (user.user_metadata?.role as string) || "";
+            console.log("[AuthCallback] Profile role:", role, "-> redirecting to:", getDashboardPath(role));
             if (!cancelled) {
               router.push(getDashboardPath(role));
             }
           } else {
+            console.log("[AuthCallback] No user after OTP verify, redirecting to login");
             if (!cancelled) {
               router.push("/login");
             }
           }
         } else {
+          console.error("[AuthCallback] OTP verify error:", error.message);
           if (!cancelled) {
             router.push("/login/client?error=verification_failed");
           }
         }
       } else if (code) {
+        console.log("[AuthCallback] Exchanging code for session...");
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (cancelled) return;
 
         if (!error) {
+          console.log("[AuthCallback] Code exchanged successfully");
           const { data: { user } } = await supabase.auth.getUser();
+          console.log("[AuthCallback] getUser after exchange:", user?.id, user?.email);
 
           if (cancelled) return;
 
           if (user) {
             if (next) {
+              console.log("[AuthCallback] Redirecting to next:", next);
               router.push(next);
               return;
             }
 
+            console.log("[AuthCallback] Ensuring profile...");
             await ensureProfile(supabase, user);
+            console.log("[AuthCallback] Handling workspace member...");
             await handleWorkspaceMember(supabase, user);
 
             const { data: profile } = await supabase
@@ -156,20 +173,24 @@ export function AuthCallback() {
               .single();
 
             const role = profile?.role || (user.user_metadata?.role as string) || "";
+            console.log("[AuthCallback] Profile role:", role, "-> redirecting to:", getDashboardPath(role));
             if (!cancelled) {
               router.push(getDashboardPath(role));
             }
           } else {
+            console.log("[AuthCallback] No user after code exchange, redirecting to login");
             if (!cancelled) {
               router.push("/login");
             }
           }
         } else {
+          console.error("[AuthCallback] Code exchange error:", error.message);
           if (!cancelled) {
             router.push("/login/client?error=exchange_failed");
           }
         }
       } else {
+        console.log("[AuthCallback] No token_hash or code found, redirecting to login");
         if (!cancelled) {
           router.push("/login");
         }

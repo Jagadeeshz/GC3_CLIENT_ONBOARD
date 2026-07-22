@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
@@ -10,17 +9,10 @@ import { cn } from "@/lib/utils";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
-  const router = useRouter();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, isLoading, router]);
-
-  if (isLoading) {
+  if (isLoading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center space-y-4">
@@ -32,24 +24,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center space-x-2">
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             <p className="text-sm text-muted-foreground">Loading your workspace...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="relative">
-            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center animate-glow">
-              <span className="text-lg font-bold text-primary">GC</span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Signing you in...</p>
           </div>
         </div>
       </div>

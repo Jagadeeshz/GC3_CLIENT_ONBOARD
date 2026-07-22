@@ -58,6 +58,14 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
+  const hasCode = request.nextUrl.searchParams.has("code");
+
+  if (pathname === "/" && hasCode) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    url.search = request.nextUrl.search;
+    return NextResponse.redirect(url);
+  }
 
   const isPublicRoute = publicRoutes.some(
     (route) => pathname === route || pathname.startsWith(route + "/")

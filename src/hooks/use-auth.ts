@@ -147,7 +147,7 @@ export function useAuth() {
     await supabase.auth.signOut();
     setUser(null);
     setRawUser(null);
-    router.push("/");
+    window.location.href = "/";
   };
 
   const resetPassword = async (email: string) => {
