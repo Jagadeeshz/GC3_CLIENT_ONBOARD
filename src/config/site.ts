@@ -12,7 +12,7 @@ export const siteConfig = {
 export const navConfig = {
   mainNav: [
     { title: "Home", href: "/" },
-    { title: "Login", href: "/login" },
-    { title: "Register", href: "/register" },
+    { title: "Team Hub", href: "/login/staff" },
+    { title: "Partner With Us", href: "/login/client" },
   ],
 };
