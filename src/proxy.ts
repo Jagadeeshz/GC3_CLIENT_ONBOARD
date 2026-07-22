@@ -65,7 +65,7 @@ export async function proxy(request: NextRequest) {
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = "/";
     return NextResponse.redirect(url);
   }
 
@@ -95,7 +95,7 @@ export async function proxy(request: NextRequest) {
     if (profile && !profile.is_active) {
       await supabase.auth.signOut();
       const url = request.nextUrl.clone();
-      url.pathname = "/login";
+      url.pathname = "/";
       url.searchParams.set("error", "account_deactivated");
       return NextResponse.redirect(url);
     }

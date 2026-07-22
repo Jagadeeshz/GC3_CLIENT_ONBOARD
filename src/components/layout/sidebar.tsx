@@ -74,7 +74,6 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push("/login");
   };
 
   return (

@@ -87,7 +87,7 @@ export function AuthCallback() {
             }
           }
         } else {
-          router.push("/login?error=verification_failed");
+          router.push("/?error=verification_failed");
         }
       } else if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
@@ -146,10 +146,10 @@ export function AuthCallback() {
             }
           }
         } else {
-          router.push("/login?error=exchange_failed");
+          router.push("/?error=exchange_failed");
         }
       } else {
-        router.push("/login");
+        router.push("/");
       }
     };
 

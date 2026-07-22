@@ -8,7 +8,7 @@ async function getUserRole(): Promise<string> {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    redirect("/login");
+    redirect("/");
   }
 
   const { data: profile } = await supabase

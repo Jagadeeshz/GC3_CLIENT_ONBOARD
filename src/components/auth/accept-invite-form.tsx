@@ -50,7 +50,7 @@ export function AcceptInviteForm() {
         setIsValidInvite(true);
       } else {
         toast.error("Invalid or expired invitation link. Please request a new one.");
-        router.push("/login");
+        router.push("/");
       }
       setIsVerifying(false);
     };
@@ -73,7 +73,7 @@ export function AcceptInviteForm() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error("Session expired. Please sign in.");
-        router.push("/login");
+        router.push("/");
         return;
       }
 

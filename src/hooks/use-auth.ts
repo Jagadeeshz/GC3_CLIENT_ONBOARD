@@ -126,7 +126,7 @@ export function useAuth() {
     await supabase.auth.signOut();
     setUser(null);
     setRawUser(null);
-    router.push("/login");
+    router.push("/");
   };
 
   const resetPassword = async (email: string) => {

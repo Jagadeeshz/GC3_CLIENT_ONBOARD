@@ -100,7 +100,6 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push("/login");
   };
 
   const toggleDarkMode = () => {
