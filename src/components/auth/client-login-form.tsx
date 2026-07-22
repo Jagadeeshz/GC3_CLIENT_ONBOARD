@@ -62,6 +62,22 @@ export function ClientLoginForm() {
         return;
       }
 
+      // Back up the PKCE code-verifier cookie into localStorage so the
+      // callback page can restore it if the middleware drops the cookie.
+      try {
+        const verifierCookie = document.cookie
+          .split(";")
+          .find((c) =>
+            c.trim().startsWith("supabase.auth.token-code-verifier=")
+          );
+        if (verifierCookie) {
+          const value = verifierCookie.trim().split("=").slice(1).join("=");
+          localStorage.setItem("supabase.auth.token-code-verifier", value);
+        }
+      } catch {
+        // localStorage may be unavailable
+      }
+
       setSentEmail(data.email);
       setMagicLinkSent(true);
       toast.success("Magic link sent! Check your email.");

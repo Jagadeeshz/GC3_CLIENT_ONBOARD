@@ -117,6 +117,29 @@ export function AuthCallback() {
       // Listen for the SIGNED_IN event which fires after auto-exchange.
       log({ step: "5-session", status: "info", message: "No session yet, listening for SIGNED_IN event..." });
 
+      // Try manual exchange as a fallback in case the auto-exchange
+      // consumed the verifier cookie but our onAuthStateChange hasn't fired.
+      let manualAttempted = false;
+      if (code) {
+        try {
+          log({ step: "5-manual", status: "info", message: "Attempting manual PKCE exchange..." });
+          const { data: exchangeData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          if (!exchangeError && exchangeData?.session) {
+            manualAttempted = true;
+            log({ step: "5-manual", status: "ok", message: `Manual exchange succeeded! user_id=${exchangeData.session.user.id}` });
+            if (!cancelled) {
+              await finalize(exchangeData.session.user.id);
+            }
+            return;
+          }
+          if (exchangeError) {
+            log({ step: "5-manual", status: "error", message: `Manual exchange failed: ${exchangeError.message}` });
+          }
+        } catch (e) {
+          log({ step: "5-manual", status: "error", message: `Manual exchange exception: ${e instanceof Error ? e.message : String(e)}` });
+        }
+      }
+
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, newSession) => {
           if (cancelled) return;
@@ -132,7 +155,7 @@ export function AuthCallback() {
 
       // Safety timeout — if no event fires in 10s, show error
       setTimeout(() => {
-        if (!cancelled) {
+        if (!cancelled && !manualAttempted) {
           log({ step: "5-timeout", status: "error", message: "Timed out waiting for session. No SIGNED_IN event received." });
           setFatalError("Authentication timed out. The magic link may have expired or the session could not be established.");
           subscription.unsubscribe();
