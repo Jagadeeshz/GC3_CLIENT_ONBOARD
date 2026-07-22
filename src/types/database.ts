@@ -1071,6 +1071,53 @@ export type Database = {
           updated_at?: string;
         };
       };
+      workspace_members: {
+        Row: {
+          id: string;
+          profile_id: string;
+          client_id: string;
+          role: string;
+          department: string | null;
+          phone: string | null;
+          status: string;
+          invited_by: string | null;
+          invited_at: string | null;
+          joined_at: string | null;
+          last_active_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          profile_id: string;
+          client_id: string;
+          role?: string;
+          department?: string | null;
+          phone?: string | null;
+          status?: string;
+          invited_by?: string | null;
+          invited_at?: string | null;
+          joined_at?: string | null;
+          last_active_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          profile_id?: string;
+          client_id?: string;
+          role?: string;
+          department?: string | null;
+          phone?: string | null;
+          status?: string;
+          invited_by?: string | null;
+          invited_at?: string | null;
+          joined_at?: string | null;
+          last_active_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Enums: {
       user_role: "client" | "pod_member" | "pod_manager" | "cpiu" | "leadership";

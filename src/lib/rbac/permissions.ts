@@ -22,7 +22,8 @@ export type Resource =
   | "feedback"
   | "setting"
   | "report"
-  | "dashboard";
+  | "dashboard"
+  | "workspace_member";
 
 export type Action =
   | "create"
@@ -65,6 +66,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "feedback:create",
     "feedback:read_own",
     "dashboard:read_own",
+    "workspace_member:manage",
+    "workspace_member:read_own",
   ],
   pod_member: [
     "profile:read_own",
@@ -179,6 +182,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "dashboard:read",
     "report:read",
     "report:export",
+    "workspace_member:manage",
+    "workspace_member:read_own",
   ],
   leadership: [
     "profile:read",
@@ -205,6 +210,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "dashboard:read",
     "report:read",
     "report:export",
+    "workspace_member:manage",
+    "workspace_member:read_own",
   ],
 };
 
@@ -215,6 +222,50 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   cpiu: "CPIU",
   leadership: "Leadership",
   operations_team: "Operations",
+};
+
+export type WorkspaceMemberRole =
+  | "owner"
+  | "project_manager"
+  | "marketing"
+  | "finance"
+  | "reviewer"
+  | "viewer";
+
+export const WORKSPACE_MEMBER_ROLE_LABELS: Record<WorkspaceMemberRole, string> = {
+  owner: "Owner",
+  project_manager: "Project Manager",
+  marketing: "Marketing",
+  finance: "Finance",
+  reviewer: "Reviewer",
+  viewer: "Viewer",
+};
+
+export const WORKSPACE_MEMBER_PERMISSIONS: Record<WorkspaceMemberRole, string[]> = {
+  owner: [
+    "dashboard", "projects", "deliverables", "documents", "comments",
+    "discussions", "downloads", "uploads", "reports", "billing",
+    "approvals", "workspace_members", "company_settings",
+  ],
+  project_manager: [
+    "dashboard", "projects", "deliverables", "documents", "comments",
+    "discussions", "downloads", "uploads", "reports", "approvals",
+  ],
+  marketing: [
+    "dashboard", "projects", "deliverables", "documents", "comments",
+    "discussions", "downloads", "uploads",
+  ],
+  finance: [
+    "dashboard", "billing", "reports", "documents", "downloads",
+    "comments", "discussions",
+  ],
+  reviewer: [
+    "dashboard", "projects", "deliverables", "documents", "comments",
+    "discussions", "downloads",
+  ],
+  viewer: [
+    "dashboard", "projects", "documents", "comments", "discussions", "downloads",
+  ],
 };
 
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {

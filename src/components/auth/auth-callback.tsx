@@ -7,10 +7,6 @@ import { Loader2 } from "lucide-react";
 
 function getDashboardPath(role: string): string {
   if (role === "client") return "/client/dashboard";
-  if (role === "operations_team") return "/operations/dashboard";
-  if (role === "pod_member" || role === "pod_manager") return "/pod/dashboard";
-  if (role === "cpiu") return "/cpiu/dashboard";
-  if (role === "leadership") return "/dashboard";
   return "/dashboard";
 }
 
@@ -38,23 +34,57 @@ export function AuthCallback() {
             return;
           }
 
-          if (next) {
-            router.push(next);
-            return;
-          }
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
 
-          const { data: { user } } = await supabase.auth.getUser();
           if (user) {
+            const userRole = user.user_metadata?.role;
+            const clientId = user.user_metadata?.client_id;
+
+            if (userRole && clientId) {
+              await supabase
+                .from("profiles")
+                .update({ role: userRole })
+                .eq("id", user.id);
+
+              const { data: existingMember } = await supabase
+                .from("workspace_members")
+                .select("id")
+                .eq("profile_id", user.id)
+                .eq("client_id", clientId)
+                .single();
+
+              if (!existingMember) {
+                await supabase.from("workspace_members").insert({
+                  profile_id: user.id,
+                  client_id: clientId,
+                  role: user.user_metadata?.workspace_role || "viewer",
+                  department: user.user_metadata?.department || null,
+                  invited_by: user.user_metadata?.invited_by || null,
+                  status: "active",
+                });
+              }
+            }
+
             const { data: profile } = await supabase
               .from("profiles")
               .select("role")
               .eq("id", user.id)
               .single();
 
-            const role = profile?.role || "";
-            router.push(getDashboardPath(role));
+            const role = profile?.role || userRole || "";
+            if (next) {
+              router.push(next);
+            } else {
+              router.push(getDashboardPath(role));
+            }
           } else {
-            router.push("/dashboard");
+            if (next) {
+              router.push(next);
+            } else {
+              router.push("/dashboard");
+            }
           }
         } else {
           router.push("/login?error=verification_failed");
@@ -63,23 +93,57 @@ export function AuthCallback() {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (!error) {
-          if (next) {
-            router.push(next);
-            return;
-          }
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
 
-          const { data: { user } } = await supabase.auth.getUser();
           if (user) {
+            const userRole = user.user_metadata?.role;
+            const clientId = user.user_metadata?.client_id;
+
+            if (userRole && clientId) {
+              await supabase
+                .from("profiles")
+                .update({ role: userRole })
+                .eq("id", user.id);
+
+              const { data: existingMember } = await supabase
+                .from("workspace_members")
+                .select("id")
+                .eq("profile_id", user.id)
+                .eq("client_id", clientId)
+                .single();
+
+              if (!existingMember) {
+                await supabase.from("workspace_members").insert({
+                  profile_id: user.id,
+                  client_id: clientId,
+                  role: user.user_metadata?.workspace_role || "viewer",
+                  department: user.user_metadata?.department || null,
+                  invited_by: user.user_metadata?.invited_by || null,
+                  status: "active",
+                });
+              }
+            }
+
             const { data: profile } = await supabase
               .from("profiles")
               .select("role")
               .eq("id", user.id)
               .single();
 
-            const role = profile?.role || "";
-            router.push(getDashboardPath(role));
+            const role = profile?.role || userRole || "";
+            if (next) {
+              router.push(next);
+            } else {
+              router.push(getDashboardPath(role));
+            }
           } else {
-            router.push("/dashboard");
+            if (next) {
+              router.push(next);
+            } else {
+              router.push("/dashboard");
+            }
           }
         } else {
           router.push("/login?error=exchange_failed");
