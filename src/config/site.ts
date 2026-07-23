@@ -1,11 +1,11 @@
 export const siteConfig = {
-  name: "GC³ Portal",
+  name: "Rakesh",
   description: "Enterprise Client Portal for Collaboration and Project Management",
-  url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  url: "https://github.com/Jagadeeshz/GC3_CLIENT_ONBOARD",
   ogImage: "/og.png",
   links: {
     twitter: "",
-    github: "",
+    github: "https://github.com/Jagadeeshz",
   },
 };
 
