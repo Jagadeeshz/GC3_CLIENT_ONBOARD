@@ -278,8 +278,9 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
 };
 
 export function getRoleNavigation(role: UserRole) {
+  const dashboardHref = role === "client" ? "/client/dashboard" : "/dashboard";
   const common = [
-    { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
+    { title: "Dashboard", href: dashboardHref, icon: "LayoutDashboard" },
     { title: "Notifications", href: "/notifications", icon: "Bell" },
     { title: "Settings", href: "/settings", icon: "Settings" },
     { title: "FAQ", href: "/faq", icon: "HelpCircle" },

@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Mail } from "lucide-react";
-import { createBrowserClient } from "@supabase/ssr";
+import { createSupabaseClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,14 +25,7 @@ export function ClientLoginForm() {
   const [magicLinkSent, setMagicLinkSent] = React.useState(false);
   const [sentEmail, setSentEmail] = React.useState("");
   const searchParams = useSearchParams();
-  const supabase = React.useMemo(
-    () =>
-      createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      ),
-    []
-  );
+  const supabase = React.useMemo(() => createSupabaseClient(), []);
 
   const error = searchParams.get("error");
 

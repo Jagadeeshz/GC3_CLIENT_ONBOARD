@@ -50,7 +50,11 @@ export async function authorize(
     };
   }
 
-  if (!hasPermission(profile.role, resource, action)) {
+  if (
+    !hasPermission(profile.role, resource, action) &&
+    !(action === "read" && (hasPermission(profile.role, resource, "read_own") || hasPermission(profile.role, resource, "read_assigned"))) &&
+    !(action === "read" && hasPermission(profile.role, resource, "manage"))
+  ) {
     return {
       authorized: false,
       response: NextResponse.json(

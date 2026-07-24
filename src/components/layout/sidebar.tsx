@@ -70,6 +70,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const { user, signOut } = useAuth();
   const router = useRouter();
 
+  const dashboardPath = user?.role === "client" ? "/client/dashboard" : "/dashboard";
   const navItems = user ? getRoleNavigation(user.role) : [];
 
   const handleSignOut = async () => {
@@ -90,7 +91,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {/* Logo */}
         <div className="relative flex h-16 items-center justify-between border-b border-sidebar-border/50 px-4">
           {!collapsed ? (
-            <Link href="/dashboard" className="flex items-center space-x-2.5">
+            <Link href={dashboardPath} className="flex items-center space-x-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-sm shadow-primary/20">
                 <span className="text-xs font-bold text-primary-foreground">GC</span>
               </div>
@@ -100,7 +101,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               </div>
             </Link>
           ) : (
-            <Link href="/dashboard" className="flex items-center justify-center">
+            <Link href={dashboardPath} className="flex items-center justify-center">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-sm shadow-primary/20">
                 <span className="text-xs font-bold text-primary-foreground">GC</span>
               </div>

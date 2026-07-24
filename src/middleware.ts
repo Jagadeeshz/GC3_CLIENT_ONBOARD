@@ -68,7 +68,11 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/callback";
     url.search = request.nextUrl.search;
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
+    return redirectResponse;
   }
 
   const isPublicRoute = publicRoutes.some(
@@ -132,17 +136,6 @@ export async function middleware(request: NextRequest) {
         }
         break;
       }
-    }
-
-    if (
-      role === "client" &&
-      !pathname.startsWith("/client/") &&
-      !pathname.startsWith("/api/") &&
-      !isPublicRoute
-    ) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/client/dashboard";
-      return NextResponse.redirect(url);
     }
 
     if (
