@@ -54,7 +54,7 @@ export function NotificationBell() {
           table: "notifications",
           filter: `user_id=eq.${user.id}`,
         },
-        (payload: { new: Record<string, unknown> }) => {
+        (payload) => {
           if (payload.new && (payload.new as Record<string, boolean>).read) {
             setUnreadCount((prev) => Math.max(0, prev - 1));
           }

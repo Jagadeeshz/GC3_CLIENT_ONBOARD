@@ -30,30 +30,6 @@ function getRoleDashboardPath(role: string): string {
 }
 
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-  const hasCode = request.nextUrl.searchParams.has("code");
-  const codeParam = request.nextUrl.searchParams.get("code");
-
-  console.log(
-    `[Middleware] ${pathname} code=${codeParam ? codeParam.slice(0, 8) + "..." : "none"}`
-  );
-
-  // Supabase verify may land user on / with the code param
-  if (pathname === "/" && hasCode) {
-    console.log(
-      `[Middleware] Redirecting /?code=... → /auth/callback?code=...`
-    );
-    const url = request.nextUrl.clone();
-    url.pathname = "/auth/callback";
-    url.search = request.nextUrl.search;
-    return NextResponse.redirect(url);
-  }
-
-  // Let the callback route handler execute without interference
-  if (pathname === "/auth/callback") {
-    return NextResponse.next();
-  }
-
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -81,18 +57,24 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("[Middleware] User:", user);
+  const pathname = request.nextUrl.pathname;
+  const hasCode = request.nextUrl.searchParams.has("code");
+  const codeParam = request.nextUrl.searchParams.get("code");
 
-  console.log(
-    "[Middleware] Cookies:",
-    request.cookies.getAll().map((c) => c.name)
-  );
+  console.log(`[Middleware] ${pathname} code=${codeParam ? codeParam.slice(0, 8) + "..." : "none"}`);
+
+  if (pathname === "/" && hasCode) {
+    console.log(`[Middleware] Redirecting /?code=... → /auth/callback?code=...`);
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    url.search = request.nextUrl.search;
+    return NextResponse.redirect(url);
+  }
 
   const isPublicRoute = publicRoutes.some(
     (route) => pathname === route || pathname.startsWith(route + "/")
   );
 
-  // Unauthenticated user on protected route
   if (!user && !isPublicRoute) {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -103,11 +85,9 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    const isLoginPage =
-      pathname === "/login" || pathname.startsWith("/login/");
+    const isLoginPage = pathname === "/login" || pathname.startsWith("/login/");
     const isRegisterPage = pathname === "/register";
 
-    // Already authenticated on login/register → redirect to dashboard
     if (isLoginPage || isRegisterPage) {
       const { data: profile } = await supabase
         .from("profiles")
@@ -121,7 +101,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Deactivated account check
     const { data: profile } = await supabase
       .from("profiles")
       .select("role, is_active")
@@ -138,27 +117,23 @@ export async function middleware(request: NextRequest) {
 
     const role = profile?.role || "";
 
-    // Staff on root → internal dashboard
     if (pathname === "/" && role !== "client") {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
 
-    // Role-based route access
     for (const route of routeRoleMap) {
       if (pathname.startsWith(route.prefix)) {
         if (!route.allowedRoles.includes(role)) {
           const url = request.nextUrl.clone();
-          url.pathname =
-            role === "client" ? "/client/dashboard" : "/unauthorized";
+          url.pathname = role === "client" ? "/client/dashboard" : "/unauthorized";
           return NextResponse.redirect(url);
         }
         break;
       }
     }
 
-    // Client isolation: client cannot access non-client routes
     if (
       role === "client" &&
       !pathname.startsWith("/client/") &&
@@ -170,7 +145,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Non-client cannot access client-only routes
     if (
       role !== "client" &&
       pathname.startsWith("/client/") &&

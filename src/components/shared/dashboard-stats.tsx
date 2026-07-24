@@ -59,11 +59,11 @@ export function DashboardStats({ userId, role }: DashboardStatsProps) {
 
             setStats({
               totalRequests: requests.length,
-              pendingRequests: requests.filter((r: { status: string }) => ["pending", "in_review", "in_progress"].includes(r.status)).length,
-              completedRequests: requests.filter((r: { status: string }) => r.status === "completed").length,
+              pendingRequests: requests.filter(r => ["pending", "in_review", "in_progress"].includes(r.status)).length,
+              completedRequests: requests.filter(r => r.status === "completed").length,
               totalDeliverables: 0,
               totalInvoices: invoices.length,
-              pendingInvoices: invoices.filter((i: { status: string }) => ["draft", "pending"].includes(i.status)).length,
+              pendingInvoices: invoices.filter(i => ["draft", "pending"].includes(i.status)).length,
               hoursUsed: Number(walletRes.data?.used_hours) || 0,
               hoursRemaining: Number(walletRes.data?.total_hours || 0) - Number(walletRes.data?.used_hours || 0),
             });
@@ -80,11 +80,11 @@ export function DashboardStats({ userId, role }: DashboardStatsProps) {
 
           setStats({
             totalRequests: requests.length,
-            pendingRequests: requests.filter((r: { status: string }) => ["pending", "in_review", "in_progress"].includes(r.status)).length,
-            completedRequests: requests.filter((r: { status: string }) => r.status === "completed").length,
+            pendingRequests: requests.filter(r => ["pending", "in_review", "in_progress"].includes(r.status)).length,
+            completedRequests: requests.filter(r => r.status === "completed").length,
             totalDeliverables: deliverablesRes.data?.length || 0,
             totalInvoices: invoices.length,
-            pendingInvoices: invoices.filter((i: { status: string }) => ["draft", "pending"].includes(i.status)).length,
+            pendingInvoices: invoices.filter(i => ["draft", "pending"].includes(i.status)).length,
             hoursUsed: 0,
             hoursRemaining: 0,
           });
