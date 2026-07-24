@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createSupabaseClient } from "@/lib/supabase/client";
 import { getDashboardRoute } from "@/lib/rbac/guards";
 import type { UserProfile, UserRole } from "@/types";
-import type { User } from "@supabase/supabase-js";
+import type { User, Session } from "@supabase/supabase-js";
 
 export function useAuth() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -73,7 +73,7 @@ export function useAuth() {
     getUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: string, session: Session | null) => {
         if (!mounted) return;
 
         if (event === "SIGNED_IN" && session?.user) {

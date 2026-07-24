@@ -24,7 +24,7 @@ export function uploadFileClient(
         cacheControl: "3600",
         upsert: false,
       })
-      .then(({ data, error }) => {
+      .then(({ data, error }: { data: { path: string } | null; error: { message: string } | null }) => {
         if (error) {
           console.error("Client upload error:", error);
           resolve(null);
@@ -32,7 +32,7 @@ export function uploadFileClient(
         }
 
         onProgress?.(100);
-        resolve(data.path);
+        resolve(data?.path ?? null);
       });
   });
 }
