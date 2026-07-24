@@ -100,6 +100,11 @@ export async function middleware(request: NextRequest) {
         .single();
 
       const role = profile?.role || "";
+
+      if (role === "client" && pathname === "/login") {
+        return supabaseResponse;
+      }
+
       const url = request.nextUrl.clone();
       url.pathname = getRoleDashboardPath(role);
       return NextResponse.redirect(url);
