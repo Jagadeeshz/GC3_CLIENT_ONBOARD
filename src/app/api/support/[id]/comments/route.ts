@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   await params;
-  const auth = await authorize("notification", "read");
+  const auth = await authorize("feedback", "read");
   if (!auth.authorized) return auth.response;
 
   return NextResponse.json({
@@ -27,7 +27,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   await params;
-  const auth = await authorize("notification", "read");
+  const auth = await authorize("feedback", "create");
   if (!auth.authorized) return auth.response;
 
   const body = await request.json();

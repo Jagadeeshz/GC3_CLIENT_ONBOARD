@@ -9,11 +9,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Ticket,
   CheckCircle2,
-  Gauge,
   Receipt,
   Users,
   Clock,
-  ArrowUpRight,
   Settings,
   BarChart3,
 } from "lucide-react";

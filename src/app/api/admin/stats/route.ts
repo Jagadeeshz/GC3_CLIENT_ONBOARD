@@ -14,7 +14,7 @@ export async function GET() {
     supabase.from("pods").select("id, is_active, created_at"),
     supabase.from("requests").select("id, status, created_at"),
     supabase.from("invoices").select("id, amount, status"),
-    supabase.from("hours_wallets").select("total_hours, used_hours"),
+    supabase.from("hours_wallet").select("total_hours, used_hours"),
   ]);
 
   const allProfiles = profiles.data || [];

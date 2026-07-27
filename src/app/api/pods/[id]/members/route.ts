@@ -53,7 +53,7 @@ export async function POST(
     .from("pod_members")
     .select("id")
     .eq("pod_id", id)
-    .eq("user_id", user_id)
+    .eq("profile_id", user_id)
     .single();
 
   if (existing) {
@@ -64,7 +64,7 @@ export async function POST(
     .from("pod_members")
     .insert({
       pod_id: id,
-      user_id,
+      profile_id: user_id,
       role: role || "member",
     })
     .select()
@@ -98,7 +98,7 @@ export async function DELETE(
     .from("pod_members")
     .delete()
     .eq("pod_id", id)
-    .eq("user_id", userId);
+    .eq("profile_id", userId);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -177,7 +177,7 @@ function SearchPageContent() {
 
       {results.length > 0 && (
         <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as CategoryFilter)}>
-          <TabsList>
+          <TabsList className="overflow-x-auto">
             {categoryCounts.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value} className="text-xs">
                 {tab.label}

@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { authorize } from "@/lib/rbac/authorize";
 
 export async function GET() {
-  const auth = await authorize("notification", "read");
+  const auth = await authorize("feedback", "read");
   if (!auth.authorized) return auth.response;
 
   const supabase = await createSupabaseServerClient();

@@ -4,20 +4,15 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   CheckSquare,
   CheckCircle2,
-  Clock,
   FileText,
   Users,
   Edit3,
   Upload,
   Timer,
-  AlertCircle,
-  ArrowUpRight,
-  Target,
   Zap,
 } from "lucide-react";
 

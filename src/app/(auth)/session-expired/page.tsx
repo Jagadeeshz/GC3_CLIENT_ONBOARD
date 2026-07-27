@@ -22,7 +22,7 @@ export default function SessionExpiredPage() {
           </p>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Link href="/">
+          <Link href="/login">
             <Button>Sign In Again</Button>
           </Link>
         </CardFooter>

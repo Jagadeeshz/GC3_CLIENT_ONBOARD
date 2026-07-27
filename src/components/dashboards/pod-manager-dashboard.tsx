@@ -27,13 +27,10 @@ import {
 import {
   ClipboardList,
   Users,
-  Clock,
   UserPlus,
   CheckCircle2,
   FileText,
-  DollarSign,
   BarChart3,
-  TrendingUp,
 } from "lucide-react";
 
 interface PodRequest {

@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
+import { getInitials } from "@/lib/utils";
 import { Users, Clock, FileText, Package, Crown, Activity } from "lucide-react";
 
 interface PodManager {
@@ -46,14 +47,6 @@ interface PodRequest {
   client: { id: string; company_name: string } | null;
 }
 
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
-}
-
 function timeAgo(dateStr: string) {
   const now = new Date();
   const date = new Date(dateStr);
@@ -66,21 +59,6 @@ function timeAgo(dateStr: string) {
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days}d ago`;
   return `${Math.floor(days / 7)}w ago`;
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "completed":
-      return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-    case "in_progress":
-      return "bg-blue-500/10 text-blue-400 border-blue-500/20";
-    case "pending":
-      return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
-    case "cancelled":
-      return "bg-red-500/10 text-red-400 border-red-500/20";
-    default:
-      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
-  }
 }
 
 function SkeletonLine({ className }: { className?: string }) {

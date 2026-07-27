@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const auth = await authorize("notification", "read");
+  const auth = await authorize("feedback", "read");
   if (!auth.authorized) return auth.response;
 
   const supabase = await createSupabaseServerClient();
@@ -46,15 +46,25 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const auth = await authorize("notification", "manage");
+  const auth = await authorize("feedback", "update");
   if (!auth.authorized) return auth.response;
 
   const body = await request.json();
   const supabase = await createSupabaseServerClient();
 
+  const validStatuses = ["open", "in_progress", "resolved", "closed"];
+  if (body.status && !validStatuses.includes(body.status)) {
+    return NextResponse.json(
+      { error: `Invalid status. Must be one of: ${validStatuses.join(", ")}` },
+      { status: 400 }
+    );
+  }
+
   const updates: Record<string, unknown> = {};
   if (body.status === "resolved") updates.rating = 5;
   if (body.status === "open") updates.rating = 1;
+  if (body.status === "in_progress") updates.rating = 3;
+  if (body.status === "closed") updates.rating = 4;
 
   const { error } = await supabase
     .from("feedback")

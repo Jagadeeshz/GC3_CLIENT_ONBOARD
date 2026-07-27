@@ -10,7 +10,7 @@ export async function GET() {
 
   const [requestsResult, hoursResult, revenueResult, usersResult] = await Promise.all([
     supabase.from("requests").select("id, status, priority, actual_hours, assigned_to, created_at"),
-    supabase.from("hours_wallets").select("total_hours, used_hours, remaining_hours"),
+    supabase.from("hours_wallet").select("total_hours, used_hours, remaining_hours"),
     supabase.from("invoices").select("amount, status, created_at"),
     supabase.from("profiles").select("id, role, is_active"),
   ]);

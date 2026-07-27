@@ -25,7 +25,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Bell,
-  ArrowUpRight,
   Plus,
   Wallet,
   FileCheck,
@@ -106,7 +105,6 @@ export function ClientDashboard() {
   const userName = user?.full_name?.split(" ")[0] || "there";
 
   const [requests, setRequests] = useState<DashboardRequest[]>([]);
-  const [requestsTotal, setRequestsTotal] = useState(0);
   const [deliverables, setDeliverables] = useState<DashboardDeliverable[]>([]);
   const [invoices, setInvoices] = useState<DashboardInvoice[]>([]);
   const [wallet, setWallet] = useState<HoursWallet | null>(null);
@@ -127,7 +125,6 @@ export function ClientDashboard() {
         if (reqRes.status === "fulfilled" && reqRes.value.ok) {
           const reqData = await reqRes.value.json();
           setRequests(reqData.data || []);
-          setRequestsTotal(reqData.total || 0);
         }
 
         if (delRes.status === "fulfilled" && delRes.value.ok) {

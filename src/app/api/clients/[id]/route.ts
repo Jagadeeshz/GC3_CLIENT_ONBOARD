@@ -19,7 +19,7 @@ export async function GET(
       *,
       profile:profile_id(id, full_name, email, avatar_url),
       contacts:contacts(id, full_name, email, phone, title, department, is_primary),
-      hours_wallet:hours_wallets(id, total_hours, used_hours, remaining_hours, billing_period_start, billing_period_end)
+      hours_wallet:hours_wallet(id, total_hours, used_hours, remaining_hours, billing_period_start, billing_period_end)
     `
     )
     .eq("id", id)

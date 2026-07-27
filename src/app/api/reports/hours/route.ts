@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const clientId = searchParams.get("client_id");
 
   let walletQuery = supabase
-    .from("hours_wallets")
+    .from("hours_wallet")
     .select("id, client_id, total_hours, used_hours, remaining_hours, billing_period_start, billing_period_end");
 
   if (clientId) {

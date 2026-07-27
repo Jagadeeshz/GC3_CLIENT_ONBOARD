@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       *,
       profile:profile_id(full_name, email, avatar_url, is_active),
       contacts:contacts(id, full_name, email, is_primary),
-      hours_wallet:hours_wallets(total_hours, used_hours, remaining_hours)
+      hours_wallet:hours_wallet(total_hours, used_hours, remaining_hours)
     `,
       { count: "exact" }
     );
