@@ -1,30 +1,51 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { getInitials } from "@/lib/utils";
-import { Users, Clock, FileText, Package, Crown, Activity } from "lucide-react";
+import { Users, Clock, FileText, Package, Crown, Activity, UserPlus, Trash2, Shield } from "lucide-react";
 
 interface PodManager {
   id: string;
   full_name: string;
+  email: string;
   avatar_url: string | null;
 }
 
 interface PodMemberProfile {
   id: string;
   full_name: string;
+  email: string;
   role: string;
   avatar_url: string | null;
 }
 
 interface PodMemberEntry {
   id: string;
+  role: string;
+  joined_at: string;
   member: PodMemberProfile | null;
 }
 
@@ -68,37 +89,45 @@ function SkeletonLine({ className }: { className?: string }) {
 export default function MyPodPage() {
   useAuth();
   const [pod, setPod] = useState<PodData | null>(null);
+  const [members, setMembers] = useState<PodMemberEntry[]>([]);
   const [requests, setRequests] = useState<PodRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const podsRes = await fetch("/api/pods/my");
-        const podsJson = await podsRes.json();
+  const [showManagePOC, setShowManagePOC] = useState(false);
+  const [addEmail, setAddEmail] = useState("");
+  const [addRole, setAddRole] = useState("poc");
+  const [adding, setAdding] = useState(false);
+  const [removing, setRemoving] = useState<string | null>(null);
 
-        if (!podsJson.data || podsJson.data.length === 0) {
-          setError("You are not assigned to any pod yet.");
-          setLoading(false);
-          return;
-        }
+  const fetchData = useCallback(async () => {
+    try {
+      const podsRes = await fetch("/api/pods/my/pocs");
+      const podsJson = await podsRes.json();
 
-        const currentPod = podsJson.data[0] as PodData;
-        setPod(currentPod);
-
-        const reqRes = await fetch(`/api/requests?pod_id=${currentPod.id}&limit=50`);
-        const reqJson = await reqRes.json();
-        setRequests(reqJson.data || []);
-      } catch (err) {
-        console.error("Failed to fetch pod data:", err);
-        setError("Failed to load pod data.");
-      } finally {
+      if (!podsJson.pod) {
+        setError("You are not assigned to any pod yet.");
         setLoading(false);
+        return;
       }
+
+      setPod(podsJson.pod);
+      setMembers(podsJson.data || []);
+
+      const reqRes = await fetch(`/api/requests?pod_id=${podsJson.pod.id}&limit=50`);
+      const reqJson = await reqRes.json();
+      setRequests(reqJson.data || []);
+    } catch (err) {
+      console.error("Failed to fetch pod data:", err);
+      setError("Failed to load pod data.");
+    } finally {
+      setLoading(false);
     }
-    fetchData();
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const activeRequests = requests.filter((r) => r.status === "in_progress" || r.status === "pending").length;
   const completedRequests = requests.filter((r) => r.status === "completed").length;
@@ -113,6 +142,38 @@ export default function MyPodPage() {
       user: r.assignee?.full_name || "Unassigned",
       time: timeAgo(r.updated_at),
     }));
+
+  const handleAddPOC = async () => {
+    if (!addEmail.trim()) return;
+    setAdding(true);
+    try {
+      const res = await fetch("/api/pods/my/pocs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile_id: addEmail.trim(), role: addRole }),
+      });
+      if (res.ok) {
+        setAddEmail("");
+        await fetchData();
+      }
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleRemoveMember = async (profileId: string) => {
+    setRemoving(profileId);
+    try {
+      const res = await fetch(`/api/pods/my/pocs?profile_id=${profileId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        await fetchData();
+      }
+    } finally {
+      setRemoving(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -177,10 +238,21 @@ export default function MyPodPage() {
                 {pod.description || "No description available."}
               </CardDescription>
             </div>
-            <Badge variant="outline" className="text-sm">
-              <Users className="mr-1 h-3 w-3" />
-              {(pod.members?.length || 0) + 1} members
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-sm">
+                <Users className="mr-1 h-3 w-3" />
+                {members.length + 1} members
+              </Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowManagePOC(true)}
+                className="gap-1.5"
+              >
+                <UserPlus className="h-3.5 w-3.5" />
+                Manage Team
+              </Button>
+            </div>
           </div>
         </CardHeader>
       </Card>
@@ -223,7 +295,7 @@ export default function MyPodPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(pod.members?.length || 0) + 1}</div>
+            <div className="text-2xl font-bold">{members.length + 1}</div>
             <p className="text-xs text-muted-foreground">Including manager</p>
           </CardContent>
         </Card>
@@ -265,9 +337,10 @@ export default function MyPodPage() {
             )}
             {/* Members */}
             <div className="space-y-3">
-              {pod.members?.map((entry) => {
+              {members.map((entry) => {
                 const member = entry.member;
                 if (!member) return null;
+                const isPOC = entry.role === "poc";
                 return (
                   <div key={entry.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -279,15 +352,29 @@ export default function MyPodPage() {
                       </Avatar>
                       <div>
                         <p className="text-sm font-medium">{member.full_name}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{member.role?.replace("_", " ")}</p>
+                        <p className="text-xs text-muted-foreground">{member.email}</p>
                       </div>
                     </div>
-                    <Badge variant="secondary">Member</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={isPOC ? "default" : "secondary"} className="gap-1 capitalize">
+                        {isPOC && <Shield className="h-3 w-3" />}
+                        {entry.role}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-destructive hover:text-destructive"
+                        onClick={() => handleRemoveMember(member.id)}
+                        disabled={removing === member.id}
+                      >
+                        {removing === member.id ? "..." : <Trash2 className="h-3.5 w-3.5" />}
+                      </Button>
+                    </div>
                   </div>
                 );
               })}
-              {(!pod.members || pod.members.length === 0) && (
-                <p className="text-sm text-muted-foreground text-center py-4">No members assigned yet.</p>
+              {members.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No team members assigned yet.</p>
               )}
             </div>
           </CardContent>
@@ -330,6 +417,73 @@ export default function MyPodPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Manage POC Dialog */}
+      <Dialog open={showManagePOC} onOpenChange={setShowManagePOC}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Manage Team Members</DialogTitle>
+            <DialogDescription>
+              Add or remove team members (POCs) from your pod.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Profile ID"
+                value={addEmail}
+                onChange={(e) => setAddEmail(e.target.value)}
+              />
+              <Select value={addRole} onValueChange={setAddRole}>
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="poc">POC</SelectItem>
+                  <SelectItem value="member">Member</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button size="sm" onClick={handleAddPOC} disabled={adding || !addEmail.trim()}>
+                {adding ? "..." : "Add"}
+              </Button>
+            </div>
+
+            {members.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">No members in this pod.</p>
+            ) : (
+              <div className="space-y-1">
+                {members.map((m) => (
+                  <div key={m.id} className="flex items-center justify-between py-2 px-2 rounded-md hover:bg-muted">
+                    <div>
+                      <span className="text-sm font-medium">{m.member?.full_name || "Unknown"}</span>
+                      <span className="text-xs text-muted-foreground ml-2">{m.member?.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs capitalize">{m.role}</Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive h-7"
+                        onClick={() => m.member && handleRemoveMember(m.member.id)}
+                        disabled={removing === m.member?.id}
+                      >
+                        {removing === m.member?.id ? "..." : "Remove"}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowManagePOC(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

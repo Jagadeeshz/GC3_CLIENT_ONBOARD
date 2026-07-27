@@ -68,6 +68,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "dashboard:read_own",
     "workspace_member:manage",
     "workspace_member:read_own",
+    "pod:read_own",
+    "pod_member:manage",
   ],
   pod_member: [
     "profile:read_own",
@@ -290,6 +292,7 @@ export function getRoleNavigation(role: UserRole) {
   const roleSpecific: Record<UserRole, Array<{ title: string; href: string; icon: string }>> = {
     client: [
       { title: "My Requests", href: "/requests", icon: "FileText" },
+      { title: "My Pod", href: "/my-pod", icon: "Users" },
       { title: "Deliverables", href: "/deliverables", icon: "Package" },
       { title: "Documents", href: "/documents", icon: "FolderOpen" },
       { title: "Invoices", href: "/invoices", icon: "Receipt" },
