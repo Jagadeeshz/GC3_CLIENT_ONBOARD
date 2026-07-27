@@ -24,15 +24,15 @@ export function uploadFileClient(
         cacheControl: "3600",
         upsert: false,
       })
-      .then(({ data, error }) => {
-        if (error) {
-          console.error("Client upload error:", error);
+      .then((result: { data: { path: string } | null; error: { message: string } | null }) => {
+        if (result.error) {
+          console.error("Client upload error:", result.error);
           resolve(null);
           return;
         }
 
         onProgress?.(100);
-        resolve(data.path);
+        resolve(result.data?.path ?? null);
       });
   });
 }

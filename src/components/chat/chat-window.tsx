@@ -60,8 +60,8 @@ export function ChatWindow({ conversationId, currentUserId }: ChatWindowProps) {
           table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
-        async (payload) => {
-          const newMsg = payload.new as Message;
+        async (payload: { new: Record<string, unknown> }) => {
+          const newMsg = payload.new as unknown as Message;
           if (newMsg.sender_id === currentUserId) return;
 
           const { data: sender } = await supabase

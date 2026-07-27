@@ -29,6 +29,7 @@ import {
   User,
   Wrench,
   Headphones,
+  Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -58,6 +59,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Contacts: Users,
   Wrench,
   Headphones,
+  Calendar,
 };
 
 interface SidebarProps {

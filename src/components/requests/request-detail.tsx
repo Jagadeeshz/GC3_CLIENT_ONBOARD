@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
 import { ArrowLeft, Clock, User, Calendar, Tag } from "lucide-react";
+import { CommentThread } from "@/components/shared/comment-thread";
 
 interface RequestDetailProps {
   requestId: string;
@@ -186,6 +187,8 @@ export function RequestDetail({ requestId }: RequestDetailProps) {
               </CardContent>
             </Card>
           )}
+
+          <CommentThread entityType="request" entityId={requestId} />
         </div>
 
         <div className="space-y-6">

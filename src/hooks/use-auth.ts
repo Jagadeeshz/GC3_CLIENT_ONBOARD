@@ -73,7 +73,7 @@ export function useAuth() {
     getUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: string, session: { user: import("@supabase/supabase-js").User } | null) => {
         if (!mounted) return;
 
         if (event === "SIGNED_IN" && session?.user) {
@@ -147,7 +147,7 @@ export function useAuth() {
     await supabase.auth.signOut();
     setUser(null);
     setRawUser(null);
-    window.location.href = "/";
+    window.location.href = "/login/client";
   };
 
   const resetPassword = async (email: string) => {

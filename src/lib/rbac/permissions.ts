@@ -282,6 +282,7 @@ export function getRoleNavigation(role: UserRole) {
   const common = [
     { title: "Dashboard", href: dashboardHref, icon: "LayoutDashboard" },
     { title: "Notifications", href: "/notifications", icon: "Bell" },
+    { title: "Support", href: "/support", icon: "Headphones" },
     { title: "Settings", href: "/settings", icon: "Settings" },
     { title: "FAQ", href: "/faq", icon: "HelpCircle" },
   ];
@@ -295,6 +296,7 @@ export function getRoleNavigation(role: UserRole) {
       { title: "Hours Wallet", href: "/hours-wallet", icon: "Clock" },
       { title: "Contacts", href: "/contacts", icon: "Users" },
       { title: "Chat", href: "/chat", icon: "MessageSquare" },
+      { title: "Meetings", href: "/meetings", icon: "Calendar" },
       { title: "Feedback", href: "/feedback", icon: "Star" },
     ],
     pod_member: [

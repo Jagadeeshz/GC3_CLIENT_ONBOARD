@@ -54,16 +54,16 @@ export function DashboardStats({ userId, role }: DashboardStatsProps) {
               supabase.from("hours_wallet").select("total_hours, used_hours").eq("client_id", client.id).single(),
             ]);
 
-            const requests = requestsRes.data || [];
-            const invoices = invoicesRes.data || [];
+            const requests = (requestsRes.data || []) as { status: string }[];
+            const invoices = (invoicesRes.data || []) as { status: string }[];
 
             setStats({
               totalRequests: requests.length,
-              pendingRequests: requests.filter(r => ["pending", "in_review", "in_progress"].includes(r.status)).length,
-              completedRequests: requests.filter(r => r.status === "completed").length,
+              pendingRequests: requests.filter((r: { status: string }) => ["pending", "in_review", "in_progress"].includes(r.status)).length,
+              completedRequests: requests.filter((r: { status: string }) => r.status === "completed").length,
               totalDeliverables: 0,
               totalInvoices: invoices.length,
-              pendingInvoices: invoices.filter(i => ["draft", "pending"].includes(i.status)).length,
+              pendingInvoices: invoices.filter((i: { status: string }) => ["draft", "pending"].includes(i.status)).length,
               hoursUsed: Number(walletRes.data?.used_hours) || 0,
               hoursRemaining: Number(walletRes.data?.total_hours || 0) - Number(walletRes.data?.used_hours || 0),
             });
@@ -75,17 +75,17 @@ export function DashboardStats({ userId, role }: DashboardStatsProps) {
             supabase.from("invoices").select("id, status"),
           ]);
 
-          const requests = requestsRes.data || [];
-          const invoices = invoicesRes.data || [];
+          const requests = (requestsRes.data || []) as { status: string }[];
+          const invoices = (invoicesRes.data || []) as { status: string }[];
 
           setStats({
             totalRequests: requests.length,
-            pendingRequests: requests.filter(r => ["pending", "in_review", "in_progress"].includes(r.status)).length,
-            completedRequests: requests.filter(r => r.status === "completed").length,
+            pendingRequests: requests.filter((r: { status: string }) => ["pending", "in_review", "in_progress"].includes(r.status)).length,
+            completedRequests: requests.filter((r: { status: string }) => r.status === "completed").length,
             totalDeliverables: deliverablesRes.data?.length || 0,
             totalInvoices: invoices.length,
-            pendingInvoices: invoices.filter(i => ["draft", "pending"].includes(i.status)).length,
-            hoursUsed: 0,
+              pendingInvoices: invoices.filter((i: { status: string }) => ["draft", "pending"].includes(i.status)).length,
+              hoursUsed: 0,
             hoursRemaining: 0,
           });
         }
