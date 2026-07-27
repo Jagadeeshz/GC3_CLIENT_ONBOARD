@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { authorize } from "@/lib/rbac/authorize";
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  await params;
   const auth = await authorize("notification", "read");
   if (!auth.authorized) return auth.response;
 
@@ -27,7 +26,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  await params;
   const auth = await authorize("notification", "read");
   if (!auth.authorized) return auth.response;
 

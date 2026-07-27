@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { authorize } from "@/lib/rbac/authorize";
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   const auth = await authorize("notification", "read");
   if (!auth.authorized) return auth.response;
 

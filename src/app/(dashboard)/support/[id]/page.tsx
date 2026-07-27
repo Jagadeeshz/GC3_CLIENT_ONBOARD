@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Send, Clock, CheckCircle2, AlertCircle, XCircle, Loader2 } from "lucide-react";
-import { formatDate, formatDateTime } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface TicketDetail {
@@ -51,6 +51,7 @@ export default function SupportTicketDetailPage() {
   useEffect(() => {
     fetchTicket();
     fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketId]);
 
   const fetchTicket = async () => {

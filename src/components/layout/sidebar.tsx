@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { getRoleNavigation } from "@/lib/rbac/permissions";
@@ -70,7 +70,6 @@ interface SidebarProps {
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
-  const router = useRouter();
 
   const dashboardPath = user?.role === "client" ? "/client/dashboard" : "/dashboard";
   const navItems = user ? getRoleNavigation(user.role) : [];

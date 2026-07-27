@@ -14,7 +14,6 @@ import {
   Headphones,
   LayoutDashboard,
   Menu,
-  X,
 } from "lucide-react";
 
 const features = [
