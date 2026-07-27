@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
 import { formatDateTime, getInitials } from "@/lib/utils";
 import { toast } from "sonner";
@@ -13,11 +12,8 @@ import { toast } from "sonner";
 interface Comment {
   id: string;
   content: string;
-  author: {
-    id: string;
-    full_name: string;
-    avatar_url: string | null;
-  };
+  author_name: string;
+  is_staff: boolean;
   created_at: string;
 }
 
@@ -27,7 +23,6 @@ interface CommentThreadProps {
 }
 
 export function CommentThread({ entityType, entityId }: CommentThreadProps) {
-  const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [sending, setSending] = useState(false);
@@ -39,9 +34,10 @@ export function CommentThread({ entityType, entityId }: CommentThreadProps) {
 
   const fetchComments = async () => {
     try {
-      const response = await fetch(`/api/notifications?limit=100`);
+      const response = await fetch(`/api/requests/${entityId}/comments`);
       if (response.ok) {
-        setComments([]);
+        const result = await response.json();
+        setComments(result.data || []);
       }
     } catch {
       // Silently handle
@@ -54,20 +50,18 @@ export function CommentThread({ entityType, entityId }: CommentThreadProps) {
     if (!newComment.trim()) return;
     setSending(true);
     try {
-      const response = await fetch("/api/notifications", {
+      const response = await fetch(`/api/requests/${entityId}/comments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: user?.id,
-          title: `Comment on ${entityType}`,
-          message: newComment,
-          type: "info",
+          content: newComment,
         }),
       });
 
       if (response.ok) {
         setNewComment("");
         toast.success("Comment added");
+        fetchComments();
       }
     } catch {
       toast.error("Failed to add comment");
@@ -104,14 +98,16 @@ export function CommentThread({ entityType, entityId }: CommentThreadProps) {
         {comments.map((comment) => (
           <div key={comment.id} className="flex gap-3">
             <Avatar className="h-8 w-8 shrink-0">
-              <AvatarImage src={comment.author.avatar_url || undefined} />
               <AvatarFallback className="text-xs">
-                {getInitials(comment.author.full_name)}
+                {getInitials(comment.author_name)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{comment.author.full_name}</span>
+                <span className="text-sm font-medium">{comment.author_name}</span>
+                {comment.is_staff && (
+                  <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">Staff</span>
+                )}
                 <span className="text-xs text-muted-foreground">
                   {formatDateTime(comment.created_at)}
                 </span>
