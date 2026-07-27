@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
               );
             } catch {
               // Called from a Server Component - ignore.
-              // Middleware handles refreshing user sessions.
             }
           },
         },
@@ -36,14 +35,21 @@ export async function GET(request: NextRequest) {
     if (!error) {
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";
-      if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
-      } else {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
+      const baseUrl = isLocalEnv
+        ? origin
+        : forwardedHost
+          ? `https://${forwardedHost}`
+          : origin;
+
+      const response = NextResponse.redirect(`${baseUrl}${next}`);
+
+      cookieStore.getAll().forEach(({ name, value, ...options }) => {
+        response.cookies.set(name, value, options as Record<string, unknown>);
+      });
+
+      return response;
     }
+
   }
 
   return NextResponse.redirect(`${origin}/login?error=auth_code_error`);

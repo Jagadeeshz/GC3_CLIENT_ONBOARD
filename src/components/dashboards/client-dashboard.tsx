@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -101,6 +102,306 @@ function timeAgo(dateStr: string) {
   return `${days}d ago`;
 }
 
+function StatCard({
+  title,
+  value,
+  icon: Icon,
+  description,
+  href,
+}: {
+  title: string;
+  value: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+  href: string;
+}) {
+  return (
+    <Link href={href}>
+      <Card className="transition-all hover:shadow-md hover:border-primary/20 cursor-pointer h-full">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <Icon className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{value}</div>
+          <p className="text-xs text-muted-foreground">{description}</p>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+function ActiveRequestsCard({ requests }: { requests: DashboardRequest[] }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Briefcase className="h-5 w-5 text-primary" />
+          Active Requests
+        </CardTitle>
+        <CardDescription>Your current requests</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {requests.length === 0 && (
+          <p className="text-sm text-muted-foreground">No active requests.</p>
+        )}
+        {requests.slice(0, 5).map((req) => (
+          <Link
+            key={req.id}
+            href={`/requests/${req.id}`}
+            className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50"
+          >
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium truncate">{req.title}</p>
+              <p className="text-xs text-muted-foreground">
+                {req.pod?.name || "Unassigned"}
+                {req.due_date && ` · Due ${new Date(req.due_date).toLocaleDateString()}`}
+              </p>
+            </div>
+            <StatusBadge status={req.status} />
+          </Link>
+        ))}
+        {requests.length > 5 && (
+          <Link href="/requests" className="block text-center text-sm text-primary hover:underline pt-1">
+            View all requests →
+          </Link>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function RecentDeliverablesCard({ deliverables }: { deliverables: DashboardDeliverable[] }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <FileCheck className="h-5 w-5 text-primary" />
+          Recent Deliverables
+        </CardTitle>
+        <CardDescription>Latest deliverables from your pods</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {deliverables.length === 0 && (
+            <p className="text-sm text-muted-foreground">No deliverables yet.</p>
+          )}
+          {deliverables.slice(0, 5).map((deliverable) => (
+            <Link
+              key={deliverable.id}
+              href={`/deliverables/${deliverable.id}`}
+              className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium truncate">{deliverable.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {deliverable.request?.title || "N/A"} · {timeAgo(deliverable.created_at)}
+                </p>
+              </div>
+              <StatusBadge status={deliverable.status} />
+            </Link>
+          ))}
+          {deliverables.length > 5 && (
+            <Link href="/deliverables" className="block text-center text-sm text-primary hover:underline pt-1">
+              View all deliverables →
+            </Link>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function WalletCard({ wallet }: { wallet: HoursWallet | null }) {
+  const pct = wallet && wallet.total_hours > 0
+    ? Math.round((wallet.remaining_hours / wallet.total_hours) * 100)
+    : 0;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Wallet className="h-5 w-5 text-primary" />
+          Hours Wallet
+        </CardTitle>
+        <CardDescription>
+          {wallet?.billing_period_start && wallet?.billing_period_end
+            ? `Billing: ${new Date(wallet.billing_period_start).toLocaleDateString()} – ${new Date(wallet.billing_period_end).toLocaleDateString()}`
+            : "No active billing period"}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {wallet ? (
+          <>
+            <div className="text-center">
+              <p className="text-4xl font-bold text-primary">{Math.round(wallet.remaining_hours)}</p>
+              <p className="text-sm text-muted-foreground">hours remaining</p>
+            </div>
+            <Progress value={pct} className="h-3" />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>{Math.round(wallet.used_hours)} hours used</span>
+              <span>{Math.round(wallet.total_hours)} hours total</span>
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground text-center py-4">No wallet data available.</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function QuickActionsCard() {
+  const actions = [
+    { label: "New Request", icon: Plus, color: "text-primary", href: "/requests" },
+    { label: "Upload Document", icon: Upload, color: "text-blue-500", href: "/documents" },
+    { label: "View Deliverables", icon: Eye, color: "text-success", href: "/deliverables" },
+    { label: "View Invoices", icon: CreditCard, color: "text-purple-500", href: "/invoices" },
+    { label: "Contact Team", icon: MessageSquare, color: "text-cyan-500", href: "/chat" },
+  ];
+
+  return (
+    <Card className="lg:col-span-2">
+      <CardHeader>
+        <CardTitle>Quick Actions</CardTitle>
+        <CardDescription>Common actions you can take</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+          {actions.map((action) => (
+            <Link
+              key={action.label}
+              href={action.href}
+              className="flex flex-col items-center gap-2 rounded-xl border p-4 transition-all duration-200 hover:bg-muted/50 hover:shadow-sm"
+            >
+              <action.icon className={`h-6 w-6 ${action.color}`} />
+              <span className="text-xs font-medium text-center">{action.label}</span>
+            </Link>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function RecentInvoicesCard({ invoices }: { invoices: DashboardInvoice[] }) {
+  if (invoices.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Receipt className="h-5 w-5 text-primary" />
+          Recent Invoices
+        </CardTitle>
+        <CardDescription>Your latest invoices and payment status</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Invoice</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Due Date</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {invoices.slice(0, 5).map((invoice) => (
+              <TableRow key={invoice.id}>
+                <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
+                <TableCell className="font-semibold">${invoice.amount.toLocaleString()}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {new Date(invoice.due_date).toLocaleDateString()}
+                </TableCell>
+                <TableCell><StatusBadge status={invoice.status} /></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
+
+function NotificationsCard({ notifications }: { notifications: DashboardNotification[] }) {
+  if (notifications.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Bell className="h-5 w-5 text-primary" />
+          Recent Notifications
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {notifications.slice(0, 4).map((notification) => (
+            <div key={notification.id} className="flex items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50">
+              <div className="mt-0.5">
+                {notification.type === "warning" && <AlertCircle className="h-4 w-4 text-yellow-500" />}
+                {notification.type === "error" && <AlertCircle className="h-4 w-4 text-red-500" />}
+                {notification.type === "info" && <Bell className="h-4 w-4 text-blue-500" />}
+                {notification.type === "success" && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium">{notification.title}</p>
+                <p className="text-xs text-muted-foreground">{notification.message}</p>
+              </div>
+              <span className="text-xs text-muted-foreground whitespace-nowrap">
+                {timeAgo(notification.created_at)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function NextMeetingCard() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-primary" />
+          Next Meeting
+        </CardTitle>
+        <CardDescription>Your upcoming scheduled meeting</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <div className="rounded-xl bg-muted/50 p-4 mb-3">
+            <Calendar className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <p className="text-sm font-medium mb-1">No upcoming meetings</p>
+          <p className="text-xs text-muted-foreground max-w-xs">
+            Meetings with your pod team will appear here once scheduled.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-6">
+      <Skeleton className="h-28 w-full rounded-xl" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 rounded-xl" />
+        ))}
+      </div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Skeleton className="h-64 rounded-xl" />
+        <Skeleton className="h-64 rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
 export function ClientDashboard() {
   const { user } = useAuth();
   const userName = user?.full_name?.split(" ")[0] || "there";
@@ -127,22 +428,18 @@ export function ClientDashboard() {
           const reqData = await reqRes.value.json();
           setRequests(reqData.data || []);
         }
-
         if (delRes.status === "fulfilled" && delRes.value.ok) {
           const delData = await delRes.value.json();
           setDeliverables(delData.data || []);
         }
-
         if (invRes.status === "fulfilled" && invRes.value.ok) {
           const invData = await invRes.value.json();
           setInvoices(invData.data || []);
         }
-
         if (walletRes.status === "fulfilled" && walletRes.value.ok) {
           const wData = await walletRes.value.json();
           setWallet(wData.data);
         }
-
         if (notifRes.status === "fulfilled" && notifRes.value.ok) {
           const nData = await notifRes.value.json();
           setNotifications(nData.data || []);
@@ -157,59 +454,12 @@ export function ClientDashboard() {
     fetchData();
   }, []);
 
+  if (loading) return <DashboardSkeleton />;
+
   const activeRequests = requests.filter((r) => !["completed", "cancelled"].includes(r.status));
   const pendingInvoices = invoices.filter((i) => i.status === "pending");
   const openCount = requests.filter((r) => r.status === "pending").length;
   const inProgressCount = requests.filter((r) => r.status === "in_progress").length;
-  const walletPct = wallet && wallet.total_hours > 0
-    ? Math.round((wallet.remaining_hours / wallet.total_hours) * 100)
-    : 0;
-
-  const statCards = [
-    {
-      title: "Active Requests",
-      value: String(activeRequests.length),
-      icon: FileText,
-      description: `${openCount} pending, ${inProgressCount} in progress`,
-    },
-    {
-      title: "Deliverables",
-      value: String(deliverables.length),
-      icon: FileCheck,
-      description: `${deliverables.filter((d) => d.status === "completed").length} completed`,
-    },
-    {
-      title: "Hours Remaining",
-      value: wallet ? String(Math.round(wallet.remaining_hours)) : "--",
-      icon: Clock,
-      description: wallet ? `of ${Math.round(wallet.total_hours)} total hours` : "No wallet",
-    },
-    {
-      title: "Pending Invoices",
-      value: pendingInvoices.length > 0 ? `$${pendingInvoices.reduce((s, i) => s + i.amount, 0).toLocaleString()}` : "$0",
-      icon: Receipt,
-      description: `${pendingInvoices.length} invoice${pendingInvoices.length !== 1 ? "s" : ""} pending`,
-    },
-  ];
-
-  const recentDeliverables = deliverables.slice(0, 5);
-  const recentInvoices = invoices.slice(0, 5);
-  const recentNotifications = notifications.slice(0, 4);
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-28 w-full rounded-xl" />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
-        </div>
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Skeleton className="h-64 rounded-xl" />
-          <Skeleton className="h-64 rounded-xl" />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -242,234 +492,56 @@ export function ClientDashboard() {
 
       {/* Stat Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">{stat.description}</p>
-            </CardContent>
-          </Card>
-        ))}
+        <StatCard
+          title="Active Requests"
+          value={String(activeRequests.length)}
+          icon={FileText}
+          description={`${openCount} pending, ${inProgressCount} in progress`}
+          href="/requests"
+        />
+        <StatCard
+          title="Deliverables"
+          value={String(deliverables.length)}
+          icon={FileCheck}
+          description={`${deliverables.filter((d) => d.status === "completed").length} completed`}
+          href="/deliverables"
+        />
+        <StatCard
+          title="Hours Remaining"
+          value={wallet ? String(Math.round(wallet.remaining_hours)) : "--"}
+          icon={Clock}
+          description={wallet ? `of ${Math.round(wallet.total_hours)} total hours` : "No wallet"}
+          href="/hours-wallet"
+        />
+        <StatCard
+          title="Pending Invoices"
+          value={pendingInvoices.length > 0 ? `$${pendingInvoices.reduce((s, i) => s + i.amount, 0).toLocaleString()}` : "$0"}
+          icon={Receipt}
+          description={`${pendingInvoices.length} invoice${pendingInvoices.length !== 1 ? "s" : ""} pending`}
+          href="/invoices"
+        />
       </div>
 
       {/* Active Requests & Recent Deliverables */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Active Requests */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-primary" />
-              Active Requests
-            </CardTitle>
-            <CardDescription>Your current requests</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {activeRequests.length === 0 && (
-              <p className="text-sm text-muted-foreground">No active requests.</p>
-            )}
-            {activeRequests.slice(0, 5).map((req) => (
-              <div key={req.id} className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium truncate">{req.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {req.pod?.name || "Unassigned"}
-                    {req.due_date && ` · Due ${new Date(req.due_date).toLocaleDateString()}`}
-                  </p>
-                </div>
-                <StatusBadge status={req.status} />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Recent Deliverables */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileCheck className="h-5 w-5 text-primary" />
-              Recent Deliverables
-            </CardTitle>
-            <CardDescription>Latest deliverables from your pods</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {recentDeliverables.length === 0 && (
-                <p className="text-sm text-muted-foreground">No deliverables yet.</p>
-              )}
-              {recentDeliverables.map((deliverable) => (
-                <div key={deliverable.id} className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-muted/50">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">{deliverable.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {deliverable.request?.title || "N/A"} · {timeAgo(deliverable.created_at)}
-                    </p>
-                  </div>
-                  <StatusBadge status={deliverable.status} />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <ActiveRequestsCard requests={activeRequests} />
+        <RecentDeliverablesCard deliverables={deliverables} />
       </div>
 
       {/* Hours Wallet & Quick Actions */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Hours Wallet */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Wallet className="h-5 w-5 text-primary" />
-              Hours Wallet
-            </CardTitle>
-            <CardDescription>
-              {wallet?.billing_period_start && wallet?.billing_period_end
-                ? `Billing: ${new Date(wallet.billing_period_start).toLocaleDateString()} – ${new Date(wallet.billing_period_end).toLocaleDateString()}`
-                : "No active billing period"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {wallet ? (
-              <>
-                <div className="text-center">
-                  <p className="text-4xl font-bold text-primary">{Math.round(wallet.remaining_hours)}</p>
-                  <p className="text-sm text-muted-foreground">hours remaining</p>
-                </div>
-                <Progress value={walletPct} className="h-3" />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{Math.round(wallet.used_hours)} hours used</span>
-                  <span>{Math.round(wallet.total_hours)} hours total</span>
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-4">No wallet data available.</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Quick Actions */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common actions you can take</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-              {[
-                { label: "New Request", icon: Plus, color: "text-primary", href: "/requests" },
-                { label: "Upload Document", icon: Upload, color: "text-blue-500", href: "/documents" },
-                { label: "View Deliverables", icon: Eye, color: "text-success", href: "/deliverables" },
-                { label: "View Invoices", icon: CreditCard, color: "text-purple-500", href: "/invoices" },
-                { label: "Contact Team", icon: MessageSquare, color: "text-cyan-500", href: "/chat" },
-              ].map((action) => (
-                <a
-                  key={action.label}
-                  href={action.href}
-                  className="flex flex-col items-center gap-2 rounded-xl border p-4 transition-all duration-200 hover:bg-muted/50 hover:shadow-sm"
-                >
-                  <action.icon className={`h-6 w-6 ${action.color}`} />
-                  <span className="text-xs font-medium text-center">{action.label}</span>
-                </a>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <WalletCard wallet={wallet} />
+        <QuickActionsCard />
       </div>
 
       {/* Recent Invoices */}
-      {recentInvoices.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Receipt className="h-5 w-5 text-primary" />
-              Recent Invoices
-            </CardTitle>
-            <CardDescription>Your latest invoices and payment status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Invoice</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentInvoices.map((invoice) => (
-                  <TableRow key={invoice.id}>
-                    <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                    <TableCell className="font-semibold">${invoice.amount.toLocaleString()}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {new Date(invoice.due_date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell><StatusBadge status={invoice.status} /></TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+      <RecentInvoicesCard invoices={invoices} />
 
       {/* Notifications */}
-      {recentNotifications.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-primary" />
-              Recent Notifications
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {recentNotifications.map((notification) => (
-                <div key={notification.id} className="flex items-start gap-3 rounded-xl border p-3 transition-colors hover:bg-muted/50">
-                  <div className="mt-0.5">
-                    {notification.type === "warning" && <AlertCircle className="h-4 w-4 text-yellow-500" />}
-                    {notification.type === "error" && <AlertCircle className="h-4 w-4 text-red-500" />}
-                    {notification.type === "info" && <Bell className="h-4 w-4 text-blue-500" />}
-                    {notification.type === "success" && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium">{notification.title}</p>
-                    <p className="text-xs text-muted-foreground">{notification.message}</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {timeAgo(notification.created_at)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <NotificationsCard notifications={notifications} />
 
       {/* Next Meeting */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-primary" />
-            Next Meeting
-          </CardTitle>
-          <CardDescription>Your upcoming scheduled meeting</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-6 text-center">
-            <div className="rounded-xl bg-muted/50 p-4 mb-3">
-              <Calendar className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <p className="text-sm font-medium mb-1">No upcoming meetings</p>
-            <p className="text-xs text-muted-foreground max-w-xs">
-              Meetings with your pod team will appear here once scheduled.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <NextMeetingCard />
     </div>
   );
 }
