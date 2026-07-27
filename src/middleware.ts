@@ -117,9 +117,9 @@ export async function middleware(request: NextRequest) {
 
     const role = profile?.role || "";
 
-    if (pathname === "/" && role !== "client") {
+    if (pathname === "/") {
       const url = request.nextUrl.clone();
-      url.pathname = "/dashboard";
+      url.pathname = getRoleDashboardPath(role);
       return NextResponse.redirect(url);
     }
 

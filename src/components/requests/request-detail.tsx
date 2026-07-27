@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
@@ -15,17 +15,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
-import { ArrowLeft, Clock, User, Calendar, Tag } from "lucide-react";
+import { ArrowLeft, Clock, User, Calendar, Tag, Download, Upload, FileText, X, CheckCircle2 } from "lucide-react";
 import { CommentThread } from "@/components/shared/comment-thread";
+import { uploadFileClient, BUCKETS } from "@/lib/database/storage";
+import { createSupabaseClient } from "@/lib/supabase/client";
 
 interface RequestDetailProps {
   requestId: string;
 }
 
+interface FileAttachment {
+  id: string;
+  name: string;
+  url: string;
+  size: number;
+  created_at: string;
+}
+
+interface UploadProgress {
+  file: File;
+  progress: number;
+  uploaded: boolean;
+  path: string | null;
+}
+
 const statusColors: Record<string, string> = {
+  draft: "bg-gray-100 text-gray-600",
   pending: "bg-yellow-100 text-yellow-800",
   in_review: "bg-blue-100 text-blue-800",
   in_progress: "bg-purple-100 text-purple-800",
@@ -46,6 +65,8 @@ export function RequestDetail({ requestId }: RequestDetailProps) {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [actualHours, setActualHours] = useState("");
+  const [attachments, setAttachments] = useState<FileAttachment[]>([]);
+  const [uploads, setUploads] = useState<UploadProgress[]>([]);
   const { user } = useAuth();
   const router = useRouter();
 
@@ -66,9 +87,36 @@ export function RequestDetail({ requestId }: RequestDetailProps) {
     }
   };
 
+  const fetchAttachments = useCallback(async () => {
+    try {
+      const supabase = createSupabaseClient();
+      const { data } = await supabase.storage.from(BUCKETS.ATTACHMENTS).list(`requests/${requestId}`);
+      if (data) {
+        const attachmentsList: FileAttachment[] = await Promise.all(
+          data.map(async (file: { id?: string; name: string; metadata?: { size?: number }; created_at?: string }) => {
+            const { data: urlData } = await supabase.storage
+              .from(BUCKETS.ATTACHMENTS)
+              .createSignedUrl(`requests/${requestId}/${file.name}`, 3600);
+            return {
+              id: file.id || file.name,
+              name: file.name,
+              url: urlData?.signedUrl || "",
+              size: file.metadata?.size || 0,
+              created_at: file.created_at || new Date().toISOString(),
+            };
+          })
+        );
+        setAttachments(attachmentsList);
+      }
+    } catch (error) {
+      console.error("Error fetching attachments:", error);
+    }
+  }, [requestId]);
+
   useEffect(() => {
     fetchRequest();
-  }, [requestId]);
+    fetchAttachments();
+  }, [requestId, fetchAttachments]);
 
   const updateStatus = async (status: string) => {
     setUpdating(true);
@@ -108,6 +156,54 @@ export function RequestDetail({ requestId }: RequestDetailProps) {
       toast.error("Failed to update hours");
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const newUploads: UploadProgress[] = files.map((file) => ({
+      file,
+      progress: 0,
+      uploaded: false,
+      path: null,
+    }));
+    setUploads((prev) => [...prev, ...newUploads]);
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const path = `requests/${requestId}/${Date.now()}-${file.name}`;
+      const result = await uploadFileClient(BUCKETS.ATTACHMENTS, path, file, (progress) => {
+        setUploads((prev) => prev.map((u, idx) => idx === i ? { ...u, progress } : u));
+      });
+      if (result) {
+        setUploads((prev) => prev.map((u, idx) => idx === i ? { ...u, uploaded: true, path: result } : u));
+      }
+    }
+    toast.success("Files uploaded successfully");
+    fetchAttachments();
+    setUploads([]);
+  }, [requestId, fetchAttachments]);
+
+  const removeUpload = useCallback((index: number) => {
+    setUploads((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const handleDownload = async (attachment: FileAttachment) => {
+    if (attachment.url) {
+      window.open(attachment.url, "_blank");
+    }
+  };
+
+  const handleDeliverableDownload = async (deliverable: Record<string, unknown>) => {
+    const fileUrl = deliverable.file_url as string | null;
+    if (fileUrl) {
+      const supabase = createSupabaseClient();
+      const { data } = await supabase.storage
+        .from(BUCKETS.DELIVERABLES)
+        .createSignedUrl(fileUrl, 3600);
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, "_blank");
+      }
     }
   };
 
@@ -172,21 +268,117 @@ export function RequestDetail({ requestId }: RequestDetailProps) {
                 <div className="space-y-3">
                   {deliverables.map((d) => (
                     <div key={d.id as string} className="flex items-center justify-between rounded-md border p-3">
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <p className="font-medium">{d.title as string}</p>
                         <p className="text-sm text-muted-foreground">
                           Version {d.version as number} · {formatDate(d.created_at as string)}
                         </p>
                       </div>
-                      <Badge className={statusColors[d.status as string]}>
-                        {(d.status as string).replace("_", " ")}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge className={statusColors[d.status as string]}>
+                          {(d.status as string).replace("_", " ")}
+                        </Badge>
+                        {d.file_url as string && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => handleDeliverableDownload(d)}
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
           )}
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>File Attachments ({attachments.length})</span>
+                <div>
+                  <Input
+                    type="file"
+                    multiple
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="attachment-upload"
+                  />
+                  <Label htmlFor="attachment-upload" className="cursor-pointer">
+                    <Button variant="outline" size="sm" asChild>
+                      <span>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload
+                      </span>
+                    </Button>
+                  </Label>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {uploads.length > 0 && (
+                <div className="space-y-2 mb-4">
+                  {uploads.map((u, index) => (
+                    <div key={index} className="flex items-center gap-3 rounded-lg border p-3">
+                      <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{u.file.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {(u.file.size / 1024).toFixed(1)} KB
+                        </p>
+                      </div>
+                      {u.uploaded ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
+                      ) : u.progress > 0 ? (
+                        <span className="text-xs text-muted-foreground">{u.progress}%</span>
+                      ) : null}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 shrink-0"
+                        onClick={() => removeUpload(index)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {attachments.length === 0 && uploads.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No attachments uploaded yet.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {attachments.map((attachment) => (
+                    <div key={attachment.id} className="flex items-center justify-between rounded-md border p-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">{attachment.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(attachment.size / 1024).toFixed(1)} KB · {formatDate(attachment.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 shrink-0"
+                        onClick={() => handleDownload(attachment)}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           <CommentThread entityType="request" entityId={requestId} />
         </div>
@@ -237,6 +429,7 @@ export function RequestDetail({ requestId }: RequestDetailProps) {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="draft">Draft</SelectItem>
                         <SelectItem value="pending">Pending</SelectItem>
                         <SelectItem value="in_review">In Review</SelectItem>
                         <SelectItem value="in_progress">In Progress</SelectItem>

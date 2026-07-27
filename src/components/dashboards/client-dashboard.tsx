@@ -29,6 +29,7 @@ import {
   Wallet,
   FileCheck,
   CreditCard,
+  Calendar,
 } from "lucide-react";
 
 interface DashboardRequest {
@@ -447,6 +448,28 @@ export function ClientDashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* Next Meeting */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5 text-primary" />
+            Next Meeting
+          </CardTitle>
+          <CardDescription>Your upcoming scheduled meeting</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-6 text-center">
+            <div className="rounded-xl bg-muted/50 p-4 mb-3">
+              <Calendar className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium mb-1">No upcoming meetings</p>
+            <p className="text-xs text-muted-foreground max-w-xs">
+              Meetings with your pod team will appear here once scheduled.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -26,6 +26,7 @@ import { formatDate } from "@/lib/utils";
 import type { Request } from "@/types";
 
 const statusColors: Record<string, string> = {
+  draft: "bg-gray-100 text-gray-600",
   pending: "bg-yellow-100 text-yellow-800",
   in_review: "bg-blue-100 text-blue-800",
   in_progress: "bg-purple-100 text-purple-800",
@@ -120,6 +121,7 @@ export function RequestList() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
             <SelectItem value="in_review">In Review</SelectItem>
             <SelectItem value="in_progress">In Progress</SelectItem>

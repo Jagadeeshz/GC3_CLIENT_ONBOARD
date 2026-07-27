@@ -13,7 +13,7 @@ export const createRequestSchema = z.object({
 export const updateRequestSchema = z.object({
   title: z.string().min(3).max(200).optional(),
   description: z.string().min(10).max(5000).optional(),
-  status: z.enum(["pending", "in_review", "in_progress", "completed", "cancelled", "on_hold"]).optional(),
+  status: z.enum(["draft", "pending", "in_review", "in_progress", "completed", "cancelled", "on_hold"]).optional(),
   priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
   pod_id: z.string().uuid().nullable().optional(),
   assigned_to: z.string().uuid().nullable().optional(),
