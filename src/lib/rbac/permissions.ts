@@ -292,7 +292,8 @@ export function getRoleNavigation(role: UserRole) {
   const roleSpecific: Record<UserRole, Array<{ title: string; href: string; icon: string }>> = {
     client: [
       { title: "My Requests", href: "/requests", icon: "FileText" },
-      { title: "My Pod", href: "/my-pod", icon: "Users" },
+      { title: "Pod Team", href: "/my-pod", icon: "Users" },
+      { title: "Team Members", href: "/team-members", icon: "Contact" },
       { title: "Deliverables", href: "/deliverables", icon: "Package" },
       { title: "Documents", href: "/documents", icon: "FolderOpen" },
       { title: "Invoices", href: "/invoices", icon: "Receipt" },

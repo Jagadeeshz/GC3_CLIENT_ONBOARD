@@ -25,7 +25,10 @@ export async function GET() {
 
   const { data: pod } = await supabase
     .from("pods")
-    .select("id, name, description, manager:manager_id(id, full_name, email, avatar_url)")
+    .select(`
+      id, name, description, is_active,
+      manager:manager_id(id, full_name, email, avatar_url, role)
+    `)
     .eq("id", podId)
     .single();
 
@@ -35,7 +38,7 @@ export async function GET() {
       id,
       role,
       joined_at,
-      member:profiles(id, full_name, email, avatar_url, role)
+      member:profiles(id, full_name, email, avatar_url, role, phone, is_active)
     `)
     .eq("pod_id", podId)
     .order("joined_at", { ascending: true });
@@ -44,7 +47,17 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ data: members || [], pod });
+  const { data: engagements } = await supabase
+    .from("requests")
+    .select("id, title, status, priority")
+    .eq("pod_id", podId)
+    .in("status", ["pending", "in_progress", "in_review"]);
+
+  return NextResponse.json({
+    data: members || [],
+    pod,
+    engagements: engagements || [],
+  });
 }
 
 export async function POST(request: NextRequest) {

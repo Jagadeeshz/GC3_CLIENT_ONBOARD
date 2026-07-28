@@ -30,6 +30,7 @@ import {
   Wrench,
   Headphones,
   Calendar,
+  Contact,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -57,6 +58,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   BarChart3,
   User,
   Contacts: Users,
+  Contact,
   Wrench,
   Headphones,
   Calendar,
