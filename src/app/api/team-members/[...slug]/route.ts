@@ -6,13 +6,13 @@ import { z } from "zod";
 const inviteSchema = z.object({
   email: z.string().email("Invalid email address"),
   full_name: z.string().min(2, "Name must be at least 2 characters"),
-  role: z.enum(["project_manager", "marketing", "finance", "reviewer", "viewer"]),
+  role: z.enum(["client_admin", "client_manager", "client_member", "client_viewer", "project_manager", "marketing", "finance", "reviewer", "viewer"]),
   department: z.string().optional(),
   phone: z.string().optional(),
 });
 
 const updateMemberSchema = z.object({
-  role: z.enum(["project_manager", "marketing", "finance", "reviewer", "viewer"]).optional(),
+  role: z.enum(["client_admin", "client_manager", "client_member", "client_viewer", "project_manager", "marketing", "finance", "reviewer", "viewer"]).optional(),
   status: z.enum(["active", "suspended"]).optional(),
   department: z.string().nullable().optional(),
   phone: z.string().nullable().optional(),

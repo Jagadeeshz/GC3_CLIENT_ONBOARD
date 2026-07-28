@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { getRoleNavigation } from "@/lib/rbac/permissions";
+import { useClientRole } from "@/hooks/use-client-role";
 import {
   LayoutDashboard,
   FileText,
@@ -72,9 +73,10 @@ interface SidebarProps {
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
+  const { subRole } = useClientRole();
 
   const dashboardPath = user?.role === "client" ? "/client/dashboard" : "/dashboard";
-  const navItems = user ? getRoleNavigation(user.role) : [];
+  const navItems = user ? getRoleNavigation(user.role, subRole) : [];
 
   const handleSignOut = async () => {
     await signOut();

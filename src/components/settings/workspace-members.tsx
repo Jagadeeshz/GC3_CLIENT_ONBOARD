@@ -26,6 +26,10 @@ import type { WorkspaceMember } from "@/types";
 
 const ROLE_LABELS: Record<string, string> = {
   owner: "Owner",
+  client_admin: "Client Admin",
+  client_manager: "Client Manager",
+  client_member: "Client Member",
+  client_viewer: "Client Viewer",
   project_manager: "Project Manager",
   marketing: "Marketing",
   finance: "Finance",
@@ -35,6 +39,10 @@ const ROLE_LABELS: Record<string, string> = {
 
 const ROLE_COLORS: Record<string, string> = {
   owner: "bg-primary/10 text-primary border-primary/20",
+  client_admin: "bg-primary/10 text-primary border-primary/20",
+  client_manager: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+  client_member: "bg-purple-500/10 text-purple-600 border-purple-500/20",
+  client_viewer: "bg-muted text-muted-foreground border-border",
   project_manager: "bg-blue-500/10 text-blue-600 border-blue-500/20",
   marketing: "bg-purple-500/10 text-purple-600 border-purple-500/20",
   finance: "bg-green-500/10 text-green-600 border-green-500/20",
@@ -135,6 +143,7 @@ export function WorkspaceMembersSettings() {
   };
 
   const isOwner = user?.role === "client";
+  const isClient = user?.role === "client";
 
   if (loading) {
     return (
@@ -240,7 +249,13 @@ export function WorkspaceMembersSettings() {
                         </SelectTrigger>
                         <SelectContent>
                           {Object.entries(ROLE_LABELS)
-                            .filter(([key]) => key !== "owner")
+                            .filter(([key]) => {
+                              if (key === "owner") return false;
+                              if (isClient) {
+                                return ["client_admin", "client_manager", "client_member", "client_viewer"].includes(key);
+                              }
+                              return true;
+                            })
                             .map(([value, label]) => (
                               <SelectItem key={value} value={value} className="text-xs">
                                 {label}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useClientRole } from "@/hooks/use-client-role";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,6 +14,7 @@ import { toast } from "sonner";
 
 export function SettingsForm() {
   const { isAdmin, hasRole } = useAuth();
+  const { canManageTeam } = useClientRole();
   const [activeTab, setActiveTab] = useState("profile");
   const isClient = hasRole("client");
 
@@ -23,7 +25,7 @@ export function SettingsForm() {
           <User className="h-4 w-4" />
           <span className="hidden sm:inline">Profile</span>
         </TabsTrigger>
-        {isClient && (
+        {isClient && canManageTeam && (
           <TabsTrigger value="workspace-members" className="gap-2">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Team</span>
@@ -51,7 +53,7 @@ export function SettingsForm() {
         <ProfileSettings />
       </TabsContent>
 
-      {isClient && (
+      {isClient && canManageTeam && (
         <TabsContent value="workspace-members">
           <WorkspaceMembersSettings />
         </TabsContent>

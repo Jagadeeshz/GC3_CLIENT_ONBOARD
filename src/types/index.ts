@@ -329,11 +329,17 @@ export interface PaginatedResponse<T> {
 
 export type WorkspaceMemberRole =
   | "owner"
+  | "client_admin"
+  | "client_manager"
+  | "client_member"
+  | "client_viewer"
   | "project_manager"
   | "marketing"
   | "finance"
   | "reviewer"
   | "viewer";
+
+export type ClientSubRole = "client_admin" | "client_manager" | "client_member" | "client_viewer";
 
 export type WorkspaceMemberStatus = "active" | "suspended" | "pending";
 

@@ -228,6 +228,10 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 
 export type WorkspaceMemberRole =
   | "owner"
+  | "client_admin"
+  | "client_manager"
+  | "client_member"
+  | "client_viewer"
   | "project_manager"
   | "marketing"
   | "finance"
@@ -236,6 +240,10 @@ export type WorkspaceMemberRole =
 
 export const WORKSPACE_MEMBER_ROLE_LABELS: Record<WorkspaceMemberRole, string> = {
   owner: "Owner",
+  client_admin: "Client Admin",
+  client_manager: "Client Manager",
+  client_member: "Client Member",
+  client_viewer: "Client Viewer",
   project_manager: "Project Manager",
   marketing: "Marketing",
   finance: "Finance",
@@ -248,6 +256,22 @@ export const WORKSPACE_MEMBER_PERMISSIONS: Record<WorkspaceMemberRole, string[]>
     "dashboard", "projects", "deliverables", "documents", "comments",
     "discussions", "downloads", "uploads", "reports", "billing",
     "approvals", "workspace_members", "company_settings",
+  ],
+  client_admin: [
+    "dashboard", "projects", "deliverables", "documents", "comments",
+    "discussions", "downloads", "uploads", "reports", "billing",
+    "approvals", "workspace_members", "company_settings",
+  ],
+  client_manager: [
+    "dashboard", "projects", "deliverables", "documents", "comments",
+    "discussions", "downloads", "uploads", "reports", "billing",
+  ],
+  client_member: [
+    "dashboard", "projects", "deliverables", "documents", "comments",
+    "discussions", "downloads", "uploads",
+  ],
+  client_viewer: [
+    "dashboard", "projects", "documents", "comments", "discussions", "downloads",
   ],
   project_manager: [
     "dashboard", "projects", "deliverables", "documents", "comments",
@@ -279,7 +303,43 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   operations_team: "Manages operational workflows, supports client and internal operations, handles tickets and resource allocation.",
 };
 
-export function getRoleNavigation(role: UserRole) {
+export type ClientSubRole = "client_admin" | "client_manager" | "client_member" | "client_viewer";
+
+const CLIENT_NAV_ITEMS = [
+  { title: "My Requests", href: "/requests", icon: "FileText", minSubRole: "client_viewer" as const },
+  { title: "Pod Team", href: "/my-pod", icon: "Users", minSubRole: "client_viewer" as const },
+  { title: "Team Members", href: "/team-members", icon: "Contact", minSubRole: "client_admin" as const },
+  { title: "Deliverables", href: "/deliverables", icon: "Package", minSubRole: "client_viewer" as const },
+  { title: "Documents", href: "/documents", icon: "FolderOpen", minSubRole: "client_viewer" as const },
+  { title: "Invoices", href: "/invoices", icon: "Receipt", minSubRole: "client_viewer" as const },
+  { title: "Hours Wallet", href: "/hours-wallet", icon: "Clock", minSubRole: "client_viewer" as const },
+  { title: "Contacts", href: "/contacts", icon: "Users", minSubRole: "client_viewer" as const },
+  { title: "Chat", href: "/chat", icon: "MessageSquare", minSubRole: "client_viewer" as const },
+  { title: "Meetings", href: "/meetings", icon: "Calendar", minSubRole: "client_viewer" as const },
+  { title: "Feedback", href: "/feedback", icon: "Star", minSubRole: "client_member" as const },
+];
+
+const SUB_ROLE_HIERARCHY: Record<ClientSubRole, number> = {
+  client_admin: 4,
+  client_manager: 3,
+  client_member: 2,
+  client_viewer: 1,
+};
+
+function canAccessSubRole(itemMinRole: ClientSubRole, userSubRole: ClientSubRole): boolean {
+  return (SUB_ROLE_HIERARCHY[userSubRole] ?? 0) >= (SUB_ROLE_HIERARCHY[itemMinRole] ?? 0);
+}
+
+export function getClientNavigation(subRole?: ClientSubRole | null) {
+  const role = subRole ?? "client_admin";
+  return CLIENT_NAV_ITEMS.filter((item) => canAccessSubRole(item.minSubRole, role)).map((item) => ({
+    title: item.title,
+    href: item.href,
+    icon: item.icon,
+  }));
+}
+
+export function getRoleNavigation(role: UserRole, subRole?: ClientSubRole | null) {
   const dashboardHref = role === "client" ? "/client/dashboard" : "/dashboard";
   const common = [
     { title: "Dashboard", href: dashboardHref, icon: "LayoutDashboard" },
@@ -290,19 +350,7 @@ export function getRoleNavigation(role: UserRole) {
   ];
 
   const roleSpecific: Record<UserRole, Array<{ title: string; href: string; icon: string }>> = {
-    client: [
-      { title: "My Requests", href: "/requests", icon: "FileText" },
-      { title: "Pod Team", href: "/my-pod", icon: "Users" },
-      { title: "Team Members", href: "/team-members", icon: "Contact" },
-      { title: "Deliverables", href: "/deliverables", icon: "Package" },
-      { title: "Documents", href: "/documents", icon: "FolderOpen" },
-      { title: "Invoices", href: "/invoices", icon: "Receipt" },
-      { title: "Hours Wallet", href: "/hours-wallet", icon: "Clock" },
-      { title: "Contacts", href: "/contacts", icon: "Users" },
-      { title: "Chat", href: "/chat", icon: "MessageSquare" },
-      { title: "Meetings", href: "/meetings", icon: "Calendar" },
-      { title: "Feedback", href: "/feedback", icon: "Star" },
-    ],
+    client: getClientNavigation(subRole),
     pod_member: [
       { title: "My Tasks", href: "/requests", icon: "FileText" },
       { title: "Deliverables", href: "/deliverables", icon: "Package" },

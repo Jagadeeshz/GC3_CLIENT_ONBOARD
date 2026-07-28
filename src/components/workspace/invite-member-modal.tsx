@@ -12,11 +12,9 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { toast } from "sonner";
 
 const ROLES = [
-  { value: "project_manager", label: "Project Manager" },
-  { value: "marketing", label: "Marketing" },
-  { value: "finance", label: "Finance" },
-  { value: "reviewer", label: "Reviewer" },
-  { value: "viewer", label: "Viewer" },
+  { value: "client_manager", label: "Client Manager" },
+  { value: "client_member", label: "Client Member" },
+  { value: "client_viewer", label: "Client Viewer" },
 ] as const;
 
 const inviteSchema = z.object({
