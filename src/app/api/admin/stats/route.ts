@@ -24,8 +24,8 @@ export async function GET() {
   const allInvoices = invoices.data || [];
   const allWallets = wallets.data || [];
 
-  const totalRevenue = allInvoices.filter((i) => i.status === "paid").reduce((s, i) => s + (i.amount || 0), 0);
-  const totalHoursUsed = allWallets.reduce((s, w) => s + (w.used_hours || 0), 0);
+  const totalRevenue = allInvoices.filter((i: any) => i.status === "paid").reduce((s: number, i: any) => s + ((i as any).amount || 0), 0);
+  const totalHoursUsed = allWallets.reduce((s: number, w) => s + (w.used_hours || 0), 0);
 
   return NextResponse.json({
     users: {
