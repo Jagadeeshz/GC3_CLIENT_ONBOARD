@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
-import { createSupabaseClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,9 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import {
-  Bell,
   Search,
   Settings,
   LogOut,
@@ -36,7 +33,6 @@ interface HeaderProps {
 export function Header({ onMobileMenuToggle }: HeaderProps) {
   const { user, signOut } = useAuth();
   const router = useRouter();
-  const [unreadCount, setUnreadCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -50,44 +46,6 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
       document.documentElement.classList.remove("dark");
     }
   }, []);
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      const supabase = createSupabaseClient();
-      const { count } = await supabase
-        .from("notifications")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user?.id || "")
-        .eq("read", false);
-
-      setUnreadCount(count || 0);
-    };
-
-    if (user) {
-      fetchNotifications();
-
-      const supabase = createSupabaseClient();
-      const channel = supabase
-        .channel("notifications")
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "notifications",
-            filter: `user_id=eq.${user.id}`,
-          },
-          () => {
-            setUnreadCount((prev) => prev + 1);
-          }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
-    }
-  }, [user]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,19 +100,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
         {/* Right Side */}
         <div className="flex items-center space-x-1 ml-auto">
           {/* Notifications */}
-          <Link href="/notifications">
-            <Button variant="ghost" size="icon" className="relative h-9 w-9 transition-all duration-200 hover:bg-muted/60">
-              <Bell className="h-4 w-4" />
-              {unreadCount > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -right-0.5 -top-0.5 h-4.5 w-4.5 rounded-full p-0 text-[10px] flex items-center justify-center min-w-[18px] shadow-sm shadow-destructive/20 animate-glow"
-                >
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </Badge>
-              )}
-            </Button>
-          </Link>
+          <NotificationBell />
 
           {/* Dark Mode Toggle */}
           <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="h-9 w-9 transition-all duration-200 hover:bg-muted/60">

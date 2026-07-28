@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
+import { createSupabaseClient } from "@/lib/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import type { Notification, NotificationType } from "@/types";
 
 const typeIcons: Record<NotificationType, React.ReactNode> = {
@@ -59,6 +61,7 @@ function timeAgo(dateString: string): string {
 }
 
 export function NotificationList() {
+  const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -67,7 +70,7 @@ export function NotificationList() {
   const [filter, setFilter] = useState("all");
   const router = useRouter();
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(
@@ -83,11 +86,52 @@ export function NotificationList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchNotifications();
-  }, [page]);
+  }, [fetchNotifications]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const supabase = createSupabaseClient();
+    const channel = supabase
+      .channel("notification-list")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: { new: Notification }) => {
+          const newNotif = payload.new;
+          setNotifications((prev) => [newNotif, ...prev]);
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload: { new: Notification }) => {
+          const updated = payload.new;
+          setNotifications((prev) =>
+            prev.map((n) => (n.id === updated.id ? updated : n))
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   const filteredNotifications = useMemo(() => {
     switch (filter) {
