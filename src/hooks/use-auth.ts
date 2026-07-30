@@ -152,7 +152,13 @@ export function useAuth() {
       if (internalRoles.includes(currentRole as any)) {
         window.location.href = "/";
       } else {
+        const internalRoles = ["podmember", "podmanager", "cpiu", "operations", "leadership"] as const;
+      const currentRole: string | undefined = user?.role;
+      if (internalRoles.includes(currentRole as any)) {
+        window.location.href = "/";
+      } else {
         window.location.href = "/login/client";
+      }
       }
   };
 
