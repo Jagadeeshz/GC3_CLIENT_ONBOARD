@@ -1,11 +1,11 @@
-import React from "react";
 import { RequestDetail } from "@/components/requests/request-detail";
 
-function RequestDetailPageContent({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
-  return <RequestDetail requestId={id} />;
+interface RequestDetailPageProps {
+  params: {
+    id: string;
+  };
 }
 
-export default function RequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  return <RequestDetailPageContent params={params} />;
+export default function RequestDetailPage({ params }: RequestDetailPageProps) {
+  return <RequestDetail requestId={params.id} />;
 }

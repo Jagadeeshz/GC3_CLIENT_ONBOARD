@@ -53,7 +53,14 @@ const MOCK_VERSIONS = [
   },
 ];
 
-export default function DeliverableVersionsPage() {
+interface DeliverableVersionsPageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function DeliverableVersionsPage({ params }: DeliverableVersionsPageProps) {
+  const deliverableId = params?.id;
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -65,7 +72,7 @@ export default function DeliverableVersionsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Version History</h1>
           <p className="text-muted-foreground">
-            Complete revision history for this deliverable
+            Complete revision history for deliverable {deliverableId}
           </p>
         </div>
       </div>

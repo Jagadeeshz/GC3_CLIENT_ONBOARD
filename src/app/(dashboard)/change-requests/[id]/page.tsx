@@ -1,4 +1,3 @@
-import React from "react";
 import { redirect } from "next/navigation";
 import { ChangeRequestDetail } from "@/components/change-requests/change-request-detail";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -20,12 +19,14 @@ async function getUserRole(): Promise<string> {
   return profile?.role ?? "viewer";
 }
 
-async function ChangeRequestDetailPageContent({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const userRole = await getUserRole();
-  return <ChangeRequestDetail changeRequestId={id} userRole={userRole} />;
+interface ChangeRequestDetailPageProps {
+  params: {
+    id: string;
+  };
 }
 
-export default function ChangeRequestDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  return <ChangeRequestDetailPageContent params={params} />;
+export default async function ChangeRequestDetailPage({ params }: ChangeRequestDetailPageProps) {
+  const id = params.id;
+  const userRole = await getUserRole();
+  return <ChangeRequestDetail changeRequestId={id} userRole={userRole} />;
 }
